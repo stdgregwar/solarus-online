@@ -5,6 +5,7 @@ var log = console.log;
 const settings = require('./server_settings.js').settings;
 var mm = require('./map.js');
 var insts = require('./instance.js');
+var State = require('./state.js').State;
 var maps_by_id = {};
 
 var maps = new mm.Maps();
@@ -28,8 +29,14 @@ function send_to_mob_master(socket,msg) {
     }
 }
 
+function hero_state(socket,msg) {
+    socket.state.update_from_msg(msg,
+                                 (p)=>broadcast_on_map(socket,p)
+                                );
+}
+
 const handlers = {
-    hello : function(socket,msg) {
+    hello : (socket,msg)=>{
         const guid = Guid.raw();
         log("Guid for player " + msg.name + " : " + guid);
         socket.guid = guid;
@@ -49,8 +56,8 @@ const handlers = {
         socket.instance.maps.client_arrives(socket,msg.map_id);
     },
     hero_pos : broadcast_on_map,
-    hero_anim : broadcast_on_map,
     hero_move : broadcast_on_map,
+    hero_state : hero_state,
     mob_move : broadcast_on_map,
     hero_action : broadcast_on_map,
     mob_action : broadcast_on_map,
@@ -92,18 +99,19 @@ const handlers = {
         socket.map.has_not_mob(socket,msg.mob_id);
     },
     mob_state : function(socket,msg) {
-        socket.map.mob_state_change(msg.mob_id,msg.state);
+        socket.map.mob_state_change(msg.mob_id,msg);
         broadcast_on_map(socket,msg);
     },
     get_mob_state : function(socket,msg) {
         const state = socket.map.get_mob_state(msg.mob_id);
         socket.send({type:'get_mob_state_qa',qn:msg.qn,state:state});
     },
-    map_event : function(socket,msg) {
-        socket.map.map_event(socket,msg.event);
+    get_hero_state : (socket,msg) => {
+        const state = socket.state.get_raw();
+        socket.send({type:'get_hero_state_qa',qn:msg.qn,state:state});
     },
     map_state : function(socket,msg) {
-        socket.map.map_state(socket,msg.state);
+        socket.map.map_state(socket,msg);
     },
     map_action : broadcast_on_map,
     get_header: function(socket,msg) {
@@ -128,17 +136,15 @@ var server = net.createServer(function(socket) {
         if(!(obj.type in log_blacklist)) log('Sending ' + str);
         socket.write(str + '\n');
     };
+    socket.state = new State();
     var buf = '';
     const terminator = '\n';
     socket.on('data', function(data) {
         buf += data;
-        log(buf);
         if(buf.indexOf(terminator) >= 0) {
-            log('index good');
             const datas = buf.split(terminator);
             for (var i = 0; i < datas.length -1; ++i) {
                 var dt = datas[i];
-                log('dt = ' + dt);
                 try{
                     const msg = JSON.parse(dt);
                     if(!(msg.type in log_blacklist))console.log('Received ' + dt);
@@ -165,4 +171,4 @@ var server = net.createServer(function(socket) {
     });
 });
 
-server.listen(1337,'127.0.0.1');
+server.listen(1337);

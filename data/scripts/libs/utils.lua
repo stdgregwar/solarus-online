@@ -42,11 +42,11 @@ end
 function table_diff(previous,new)
   local previous = previous or {}
   local new = new or {}
-  local diff = {new={},modified={},removed={}}
+  local diff = {new={},mod={},rem={}}
   --accumultate removed
   for k,v in pairs(previous)do
     if not new[k] then
-      diff.removed[k] = v
+      diff.rem[k] = v
     end
   end
   --accumulate new and modified
@@ -54,7 +54,7 @@ function table_diff(previous,new)
     if not previous[k] then
       diff.new[k] = v
     elseif not deep_compare(previous[k],v) then
-      diff.modified[k] = v
+      diff.mod[k] = v
     end
   end
   return diff

@@ -139,6 +139,7 @@ function handlers:hero_arrival(msg)
     alter:set_displayed_name(msg.name)
     alter.net_id = msg.guid
     alter.speed = msg.speed
+    alter:declare_to_network()
     self.heroes[msg.guid] = alter
 end
 
@@ -151,19 +152,6 @@ function handlers:hero_removal(msg)
   self.heroes[msg.guid] = nil
 end
 
---Alter hero position changed
-function handlers:hero_pos(msg)
-  local ent = self.heroes[msg.guid]
-  ent:set_position(msg.x,msg.y,msg.layer)
-end
-
---Alter hero animation changed
-function handlers:hero_anim(msg)
-  local ent = self.heroes[msg.guid]
-  ent:set_animation(msg.anim)
-  ent:set_direction(msg.dir or ent:get_direction())
-end
-
 --Alter hero move changed
 function handlers:hero_move(msg)
   local ent = self.heroes[msg.id]
@@ -171,6 +159,13 @@ function handlers:hero_move(msg)
   ent:movement_from_net(msg.move)
   local pos = msg.move.pos
   ent:set_position(pos.x,pos.y,pos.layer)
+end
+
+function handlers:hero_state(msg)
+  local alter = self.heroes[msg.hero_id]
+  if alter then
+    alter:update_state(msg)
+  end
 end
 
 --Alter hero
@@ -243,7 +238,7 @@ function handlers:mob_state(msg)
   local id = msg.mob_id
   local mob = self.mobs[msg.mob_id] or self.states[msg.mob_id]
   if mob then
-    mob:update_state(msg.state)
+    mob:update_state(msg)
   end
 end
 
@@ -266,11 +261,15 @@ end
 function handlers:map_state(msg)
   if msg.map_id == network.current_map:get_id() then
     local map = network.current_map
-    map:update_state(msg.state,msg.new,msg.modified,msg.removed)
+    map:update_state(msg)
   end
 end
 
 function handlers:get_mob_state_qa(msg)
+  network.querry_answer(msg.qn,msg)
+end
+
+function handlers:get_hero_state_qa(msg)
   network.querry_answer(msg.qn,msg)
 end
 
@@ -314,8 +313,8 @@ local function hash_id(entity)
 end
 
 function network.set_net_id(entity)
-  local name = entity:get_name() or hash_id(entity) --get entity name if provided by map
-  entity.net_id = name;
+  local name = entity.net_id or entity:get_name() or hash_id(entity) --get entity name if provided by map
+  entity.net_id = name
   return name
 end
 
@@ -343,20 +342,17 @@ end
 ------------- Map Change handling ----------------
 
 function network.on_game_started(game)
+  local hero = game:get_hero()
   game:set_value('guid',network.guid);
   --on map change notify server our new position and map
-  hero_utils.setup_hero_repl_callback(game,game:get_hero(),network)
+  hero_utils.setup_hero_repl_callback(game,hero,network)
+  hero:declare_to_network('hero')
   game:register_event("on_map_changed", function(game,map)
     print("Map changed to " .. map:get_id())
     handlers.heroes = {} -- Empty alter_heroes list
 
-    --add hero guid as name TODO put true name
-
-
     --save current map
     network.current_map = map
-
-    local hero = map:get_hero()
 
     hero.displayed_name = game:get_value('player_name')
     hero.net_id = network.guid
@@ -388,19 +384,19 @@ function network.register_state(state)
   handlers.states[state.net_id] = state
 end
 
-local net_states = {}
+local sendable_states = {}
 
 --add a state to send list
-function network.send_state(packet,id)
-  net_states[id] = packet
+function network.register_sendable_state(stateful)
+  sendable_states[stateful.net_id] = stateful
 end
 
 --send all state packets registered for this frame
 function network.send_state_changes()
-  for _,p in pairs(net_states) do
-    network.send(p)
+  for _,s in pairs(sendable_states) do
+    s:send()
   end
-  net_states = {}
+  sendable_states = {}
 end
 
 -----------------------------------------------
@@ -426,11 +422,12 @@ function network.querry_answer(qn,msg)
   end
 end
 
-function network.get_mob_state(mob_id,continuation)
+function network.get_state(id,prefix,continuation)
+  local prefix = prefix or 'mob'
   local function querry_handler(msg)
     continuation(msg.state)
   end
-  network.querry({type='get_mob_state',mob_id=mob_id},querry_handler);
+  network.querry({type='get_'..prefix..'_state',[prefix..'_id']=id},querry_handler);
 end
 
 function network.get_server_header(host,port,save,continuation)
@@ -455,6 +452,8 @@ end
 -- blacklist some packet to avoid polluting the logs
 local log_blacklist = {
   hero_move = true,
+  hero_state = true,
+  mob_state = true,
   mob_move = true,
   ends = true
 }

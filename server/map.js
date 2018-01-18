@@ -1,4 +1,5 @@
 var log = console.log;
+var State = require('./state.js').State;
 
 class Worker{
     constructor(id,client) {
@@ -42,7 +43,7 @@ class Map{
         this.workers = {};
         this.workers_by_clients = {};
         this.mob_states = {};
-        this.state = {};
+        this.state = new State();
     }
 
     make_arrival(arriving) {
@@ -173,11 +174,12 @@ class Map{
 
     get_mob_state(mob_id) {
         //TODO replace with a BDD
-        return this.mob_states[mob_id];
+        this.mob_states[mob_id] = this.mob_states[mob_id] || new State();
+        return this.mob_states[mob_id].get_raw();
     }
 
-    mob_state_change(mob_id,state) {
-        this.mob_states[mob_id] = state;
+    mob_state_change(mob_id,msg) {
+        this.mob_states[mob_id].update_from_msg(msg,(p)=>{});
     }
 
     send_to_mob_master(mob_id,msg) {
@@ -186,19 +188,10 @@ class Map{
         }
     }
 
-    map_event(client,event) {
-        
-    }
-
-    map_state(client,state) {
-        if(this.master != client) {
-            log(`${client.guid} state change has been rejected : NOT MASTER`);
-        } else {
-            this.state = state;
-            this.broadcast({type:'map_state',
-                            map_id:this.map_id,
-                            state:state},client);
-        }
+    map_state(client,msg) {
+        this.state.update_from_msg(msg,
+                                   (p)=>this.broadcast(p,client)
+                                  );
     }
 
     /**

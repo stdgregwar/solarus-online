@@ -18,6 +18,7 @@ require("scripts/metas/map")
 require("scripts/metas/movements")
 require("scripts/metas/destructible")
 require('scripts/metas/npc')
+require('scripts/metas/hero')
 
 -- This function is called when Solarus starts.
 function sol.main:on_started()

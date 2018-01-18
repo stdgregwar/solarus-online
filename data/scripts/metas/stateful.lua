@@ -1,4 +1,5 @@
 local network = require'scripts/networking/networking'
+local json = require'json'
 
 local stateful = {}
 
@@ -13,14 +14,39 @@ local smeta
 function stateful.setup_meta(meta)
   meta.net_enabled = true
   -- retrieve current state
-  function meta:declare_to_network()
+  function meta:declare_to_network(prefix)
     local id = network.set_net_id(self)
     local function setup_state(state)
-      self:setup_net_state(state)
+      self:setup_net_state(state,prefix)
       network.register_state(self)
       safe(self.on_restore_from_state)(self,self.state)
     end
-    network.get_mob_state(id,setup_state)
+    network.get_state(id,prefix,setup_state)
+  end
+
+  function meta:update_diff(k,v,old)
+    self.__diff = self.__diff or {new={},mod={},rem={}}
+    local diff = self.__diff
+    if v and old and v ~= old then
+      diff.mod[k] = v
+    end
+    if v and not old then
+      diff.new[k] = v
+    end
+    if not v and old then
+      diff.rem[k] = old
+    end
+  end
+
+  function meta:should_send_diff()
+    if not self.__diff then
+      return false
+    end
+    local d = self.__diff
+    local s = rawget(self.state,'__state')
+    local diff_size = #d.new+#d.rem+#d.mod+3
+    local state_size = #s
+    return diff_size < state_size 
   end
 
   -- make an automatically sended table with a table proxy
@@ -40,7 +66,9 @@ function stateful.setup_meta(meta)
     function net_meta.__newindex(t,k,v)
       local old = t.__state[k]
       t.__state[k] = v
-      network.send_state({type=pname,[idname]=net_id,state=t.__state},net_id)
+      --network.send_state({type=pname,[idname]=net_id,state=t.__state},net_id)
+      network.register_sendable_state(self)
+      self:update_diff(k,v,old)
       modified_handler(k,v,old)
     end
     function net_meta.__index(t,k)
@@ -53,6 +81,18 @@ function stateful.setup_meta(meta)
       state = merge_into_table(state,self.state or {})
     end
     self.state = setmetatable({__state=state},net_meta)
+
+    --update send method :
+    function self:send()
+      local packet = {type=pname,[idname]=net_id}
+      if self:should_send_diff() then
+        packet.diff = self.__diff
+      else
+        packet.state = rawget(self.state,'__state')
+      end
+      network.send(packet)
+      self.__diff = nil
+    end
   end
 
   function meta:setup_simple_state(state)
@@ -63,12 +103,23 @@ function stateful.setup_meta(meta)
     function simple_meta.__index(t,k)
       return t.__state[k]
     end
-    self.state = setmetatable({__state=state},{pairs = function(t) return pairs(t) end})
+    function simple_meta:pairs()
+      return pairs(self.__state)
+    end
+    self.state = setmetatable({__state=state},simple_meta)
   end
 
-  local function state_diff(current,new)
-    local current = rawget(current,'__state') or current
-    return table_diff(current,new);
+  function meta:update_from_diff(diff)
+    local s = rawget(self.state,'__state')
+    for k,v in pairs(diff.new) do
+      s[k] = v
+    end
+    for k,v in pairs(diff.mod) do
+      s[k] = v
+    end
+    for k,v in pairs(diff.rem) do
+      s[k] = nil
+    end
   end
 
   -------------------------------------------------------
@@ -76,19 +127,23 @@ function stateful.setup_meta(meta)
   -------------------------------------------------------
   function meta:update_state(state)
     --TODO take differential states in account
-    local old_state = self.state
-    local diff = state_diff(old_state,state)
+    local old_state = rawget(self.state,'__state')
+    local diff = state.diff or table_diff(old_state,state.state)
     --set the new state in state proxy
-    rawset(self.state,'__state',state)
+    if state.diff then
+      self:update_from_diff(state.diff)
+    else
+      rawset(self.state,'__state',state.state)
+    end
     --call state change handlers
     local handlers = self.__state_handlers or {}
     for k,v in pairs(diff.new) do
       safe(handlers[k])(v)
     end
-    for k,v in pairs(diff.modified) do
+    for k,v in pairs(diff.mod) do
       safe(handlers[k])(v,old_state[k])
     end
-    for k,v in pairs(diff.removed) do
+    for k,v in pairs(diff.rem) do
       safe(handlers[k])(nil,v)
     end
     safe(self.on_state_changed)(self,self.state,diff)

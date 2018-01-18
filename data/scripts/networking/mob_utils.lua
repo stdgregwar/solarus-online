@@ -29,9 +29,9 @@ function utils.mov_or_else(mov,type)
   end
 end
 
-local interp_time = 50 -- milliseconds
+local interp_time = 100 -- milliseconds
 local tp_tolerance = 2 -- 2px teleport isn't that bad
-local tp_threshold = 400 -- 400px is certainly too big to keep up
+local tp_threshold = 1200 -- 400px is certainly too big to keep up
 
 function cancel_mov(ent)
   if ent.__mov_timer then
@@ -43,6 +43,9 @@ end
 -- adding a target move to keep up with the new move without teleporting
 -- the entity
 function interpolate_movement(ent,old_pos,target_pos,new_mov)
+  --TEST TODO verify which is better
+  --return new_mov
+
   local oldx = vector(old_pos.x,old_pos.y)
   local newx = vector(target_pos.x,target_pos.y)
 
@@ -71,6 +74,7 @@ function interpolate_movement(ent,old_pos,target_pos,new_mov)
 
   --make target movement that will preceed the other movement
   local tmov = sol.movement.create('target')
+  tmov:set_ignore_obstacles(true)
   tmov:set_target(q.x,q.y)
   tmov:set_smooth(false)
 
@@ -78,13 +82,14 @@ function interpolate_movement(ent,old_pos,target_pos,new_mov)
 
   --start timer to switch to new movement
   ent.__mov_timer = sol.timer.start(ent,interp_time,function()
-                    --ensure we are at point q
-                    ent:set_position(q.x,q.y)
-                    --start the new_move
-                    new_mov:start(ent)
+                                      --ensure we are at point q
+                                      ent:set_position(q.x,q.y)
+                                      --start the new_move
+                                      new_mov:start(ent)
   end)
 
   return tmov
+  --return new_mov
 end
 
 --unserialize entity movement
@@ -168,10 +173,10 @@ function utils.make_mob_master_basics(mob,id,network,prefix)
 
   --set animation changes callbacks
   --for name, sp in mob:get_sprites() do
-    --function sp:on_animation_changed(anim)
-      --send({type="hero_anim",anim=anim})
-      --send_hero_pos()
-    --end 
+  --function sp:on_animation_changed(anim)
+  --send({type="hero_anim",anim=anim})
+  --send_hero_pos()
+  --end 
   --end
 
   -- make filter to avoid packet repeat because of move change
@@ -182,19 +187,19 @@ function utils.make_mob_master_basics(mob,id,network,prefix)
   --make a local movement filter to avoid sending target movement at each frames
   local last_mov = {type='straigt'}
   local last_time = network.server_time_s()
-  local target_recover_s = 0.75
+  local target_recover_s = 0.1
   local function mov_send(mov)
     local time = network.server_time_s()
     if last_mov.type == mov.type and
-    mov.type == 'target' and
-    mov.target_type == 'entity' and
+      mov.type == 'target' and
+      mov.target_type == 'entity' and
     last_mov.target_type == 'entity' then
-        if last_mov.entity ~= mov.entity or
-        time-last_time > target_recover_s then
-          last_mov = mov
-          last_time = time
-          send({type=mpname,id=id,move=mov})
-        end
+      if last_mov.entity ~= mov.entity or
+      time-last_time > target_recover_s then
+        last_mov = mov
+        last_time = time
+        send({type=mpname,id=id,move=mov})
+      end
     else --regular movements or xy targets...
       last_mov = mov
       last_time = time
@@ -204,9 +209,9 @@ function utils.make_mob_master_basics(mob,id,network,prefix)
 
   --set movement changes
   mob:register_event('on_movement_changed', function(self,mov)
-    --print(mov)
-    mov_send(serialize_movement(mob,mov))
-    --send_mob_pos()
+                       --print(mov)
+                       mov_send(serialize_movement(mob,mov))
+                       --send_mob_pos()
   end)
   
 

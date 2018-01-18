@@ -59,6 +59,12 @@ local function name_trans(name)
   return name
 end
 
+function entity:disapear(cause)
+  entity.state.absent = true
+  entity.state.disapear_time = network.server_time_s()
+  entity.state.disapear_cause = cause
+end
+
 function entity:make_real()
   local anim = sprite:get_animation_set()
   local name = name_trans(anim:sub(10,-1)) -- remove the 'entities/'
@@ -75,10 +81,15 @@ function entity:make_real()
   }
   real:get_sprite():fade_in(5)
   self.real = real
+  --setup callback to propagate state
   function real:on_cut()
-    entity.state.absent = true
-    entity.state.disapear_time = network.server_time_s()
-    entity.state.disapear_cause = 'destroyed'
+    entity:disapear('destroyed')
+  end
+  function real:on_lifting()
+    entity:disapear('lifted')
+  end
+  function real:on_exploded()
+    entity:disapear('exploded')
   end
 end
 
@@ -106,7 +117,8 @@ entity:set_state_val_change_handler(
   function(absent)
     if absent and not entity.real:destroyed() then
       entity.real:remove()
-      if entity.state.disapear_cause == 'destroyed' then
+      if entity.state.disapear_cause == 'destroyed' or
+         entity.state.disapear_cause == 'exploded' then
         entity:play_destroy_anim()
       end
     end
@@ -118,4 +130,6 @@ end)
 -- Event called when the custom entity is initialized.
 function entity:on_created()
   self:set_visible(false)
+  self:set_modified_ground('empty')
+  self:set_traversable_by(true)
 end

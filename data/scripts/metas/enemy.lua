@@ -283,7 +283,7 @@ function enemy_meta:push_back(pusher, max_dist)
   local function restore_mov()
     self.__pushed = false
     self:get_movement():stop()
-    old_mov:start(self)
+    if old_mov then old_mov:start(self) end
     safe(self.on_restarted)(self)
   end
   local movement = sol.movement.create("straight")

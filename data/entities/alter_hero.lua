@@ -13,6 +13,8 @@ local entity = ...
 local mob = require'scripts/metas/mob'
 local actions = require'scripts/metas/actions'
 local mutils = require'scripts/networking/mob_utils'
+local stateful = require'scripts/metas/stateful'
+local network = require'scripts/networking/networking'
 
 local game = entity:get_game()
 local map = entity:get_map()
@@ -27,16 +29,49 @@ function entity:on_created()
   self:set_drawn_in_y_order(true)
   self:set_traversable_by(false)
   self:set_traversable_by('hero',true)
-  self.mov = sol.movement.create("straight")
-  self.mov:start(self)
-  self.mov:set_smooth(true)
-  --name_displayer:add_named_entity(self)
-  --self.mov:set_speed(self.speed)
 end
 
 entity.movement_from_net = mutils.movement_from_net
 
 actions.setup_meta(entity)
+stateful.setup_meta(entity)
+
+local draw_sword_states = {
+  ['sword loading'] = true,
+  ['sword swinging'] = true,
+  ['sword tapping'] = true,
+}
+
+entity:set_state_val_change_handler(
+  'state',
+  function(state)
+    local draw_sword = state:find('sword') and true or false
+    entity:enable_sword_drawing(draw_sword)
+    entity:update_animation()
+  end
+)
+
+entity:set_state_val_change_handler(
+  'dir',
+  function(dir)
+    if type(dir) == 'number' then
+      sword:set_direction(dir)
+      tunic:set_direction(dir)
+    end
+  end
+)
+
+function entity:enable_sword_drawing(b)
+  self.on_post_draw = b and self.draw_sword
+end
+
+function entity:declare_to_network()
+  local id = network.set_net_id(self)
+  local function setup_state(state)
+    self:setup_simple_state(state,prefix)
+  end
+  network.get_state(id,'hero',setup_state)
+end
 
 function entity:draw_sword(surf)
   local x,y = self:get_position()
@@ -46,9 +81,9 @@ end
 function entity:trigger_sword_anim(anim_name)
   local mov = self:get_movement()
   if mov then mov:stop() end
-  self.on_post_draw = self.draw_sword
+  self:enable_sword_drawing(true)
   sword:set_animation(anim_name,function()
-                        self.on_post_draw = nil
+                        self:enable_sword_drawing(false)
   end)
   tunic:set_animation(anim_name,function()
                         tunic:set_animation('stopped')
@@ -56,17 +91,11 @@ function entity:trigger_sword_anim(anim_name)
 end
 
 function entity:action_sword_swing()
-  print("called")
   self:trigger_sword_anim("sword")
 end
 
-function entity:set_animation(anim)
-  tunic:set_animation(anim)
-  if anim == "stopped" then
-    self.mov:set_speed(0)
-  elseif anim == "walking" then
-    self.mov:set_speed(self.speed or 5)
-  end
+function entity:action_spin_attack()
+  self:trigger_sword_anim("spin_attack")
 end
 
 function entity:set_displayed_name(name)
@@ -74,31 +103,42 @@ function entity:set_displayed_name(name)
   name_displayer:add_named_entity(self)
 end
 
-entity.old_set_dir = entity.set_direction
+local state_to_walk_anim = {
+  ['sword loading'] = 'sword_loading_walking',
+  ['sword tapping'] = 'sword_tapping',
+  ['pushing'] = 'pushing',
+  carrying = 'carrying_walking',
+  hurt = 'hurt'
+}
 
-function entity:set_direction(dir)
-  self:old_set_dir(dir)
-  self.mov:set_angle(dir*math.pi/2)
-end
+local state_to_stopped_anim = {
+  ['sword swinging'] = 'none',
+  ['sword spin attack'] = 'none',
+  ['sword loading'] = 'sword_loading_stopped',
+  ['sword_tapping'] = 'sword_tapping',
+  ['pulling'] = 'pulling',
+  carrying = 'carrying_stopped',
+  hurt = 'hurt',
+}
 
-entity.old_set_pos = entity.set_position
-
-function entity:set_position(x,y,layer)
-  entity:old_set_pos(x,y,layer)
-  self.mov:set_xy(x,y)
+function entity:update_animation(mov)
+  local mov = mov or entity:get_movement()
+  local state = self.state.state
+  local walk_anim = state_to_walk_anim[state] or 'walking'
+  local stop_anim = state_to_stopped_anim[state] or 'stopped'
+  local anim = (mov and mov:get_speed() > 0) and walk_anim or stop_anim
+  if(tunic:get_animation() ~= anim) then
+    if tunic:has_animation(anim) then
+      tunic:set_animation(anim)
+    end
+    if sword:has_animation(anim) then
+      sword:set_animation(anim)
+    end
+  end
 end
 
 function entity:on_movement_changed(mov)
-  local old_dir = tunic:get_direction()
-
-  local anim = mov:get_speed() > 0 and 'walking' or 'stopped'
-  if(tunic:get_animation() ~= anim) then
-    tunic:set_animation(anim)
-    --print("setting anim to " ..  anim .. " while speed = " .. mov:get_speed()) 
-  end
-  local dir = mov:get_speed() > 0 and mov:get_direction4() or old_dir;
-  tunic:set_direction(dir)
-  sword:set_direction(dir)
+  self:update_animation(mov)
 end
 
 function entity:on_removed()
