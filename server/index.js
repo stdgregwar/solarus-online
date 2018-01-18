@@ -128,23 +128,31 @@ var server = net.createServer(function(socket) {
         if(!(obj.type in log_blacklist)) log('Sending ' + str);
         socket.write(str + '\n');
     };
+    var buf = '';
+    const terminator = '\n';
     socket.on('data', function(data) {
-        const datas = new String(data).split('\n');
-        for (dt of datas) {
-            if(dt === '') continue;
-            try{
-                const msg = JSON.parse(dt);
-                if(!(msg.type in log_blacklist))console.log('Received ' + dt);
-                message_handler(socket,msg);
-            } catch(e) {
-                log("Error " + e);
-                if(e.stack) {
-                    log('\n========Stack========');
-                    log(e.stack);
+        buf += data;
+        log(buf);
+        if(buf.indexOf(terminator) >= 0) {
+            log('index good');
+            const datas = buf.split(terminator);
+            for (var i = 0; i < datas.length -1; ++i) {
+                var dt = datas[i];
+                log('dt = ' + dt);
+                try{
+                    const msg = JSON.parse(dt);
+                    if(!(msg.type in log_blacklist))console.log('Received ' + dt);
+                    message_handler(socket,msg);
+                } catch(e) {
+                    log("Error " + e);
+                    if(e.stack) {
+                        log('\n========Stack========');
+                        log(e.stack);
+                    }
                 }
             }
+            buf = datas[datas.length-1];
         }
-        //socket.write(data + '\n');
     });
     socket.on('close',function(data) {
         //remove_hero_from_map(socket,socket.map_id);

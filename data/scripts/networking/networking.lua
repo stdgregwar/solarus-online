@@ -434,7 +434,7 @@ end
 function network.get_server_header(host,port,save,continuation)
   print('trying to connect to',host,port)
   local sock = socket.tcp()
-  sock:settimeout(0.05)
+  sock:settimeout(0.3)
   local res,err = sock:connect(host,port)
   if not res then
     continuation({description='offline',err=err})
@@ -462,7 +462,7 @@ function network.make_send(socket)
     local str = json.encode(data)
     if not log_blacklist[data.type] then print("Sending " .. str) end
     network.stats.ch_count_up = network.stats.ch_count_up + #str + 1
-    socket:send(str.."\n")
+    socket:send(str..'\n')
   end
 end
 
