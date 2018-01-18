@@ -1,0 +1,5 @@
+#server modules
+*node_modules*
+#lua compiled
+*.luac
+
