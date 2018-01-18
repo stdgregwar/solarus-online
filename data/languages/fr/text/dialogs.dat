@@ -1,0 +1,135 @@
+dialog{
+  id = "castle_coco_guy",
+  text = [[
+C'est pas juste de voir
+tout ces jeunes garçons
+partir à l'aventure alors
+que moi je dois rester
+ici, à garder mes poules.
+]]
+}
+
+dialog{
+  id = "castle_npc_1",
+  text = [[
+Hey! $v! Les PNJs sont
+aussi synchronisés!
+N'est-ce pas magnifique?
+Tu remarqueras que la
+boite de dialogue ne mets
+pas le jeu en pause. 
+Après tout, on ne va pas
+mettre tout le  monde en
+pause!
+]]
+}
+
+dialog{
+  id = "castle_npc_2",
+  text = [[
+Ton nom c'est $v c'est
+ça?
+Je vois passer une
+ribambelle de personnes 
+louches depuis ce matin.
+Ils sont tous habillés
+pareils en plus.
+]]
+}
+
+dialog{
+  id = "castle_npc_3",
+  text = [[
+A force de marcher je ne
+sens plus mes pieds!
+]]
+}
+
+dialog{
+  id = "castle_seller",
+  text = [[
+J'ai eu vent d'une
+lointaine contrée ou le
+commerce florissant de 
+sacs d'olives à travers
+le troc avait fait la
+richesse de bien des
+marchands. Je tenterais
+bien de commencer un
+business ici, c'est pas
+la clientelle qui manque.
+Seulement, je n'ai pas
+de sacs d'olives...
+]]
+}
+
+dialog{
+  id = "sign_bridge",
+  text = [[
+Au nord, un petit donjon
+de démonstration qui
+utilise des méchaniques
+à plusieurs. Notons que
+ce genre de donjons
+devrait être 'instancié'
+pour un groupe, mais les
+instances n'ont pas encore
+été testée et ce donjon
+fait donc partie du monde
+principal.
+]]
+}
+
+dialog{
+  id = "sign_bushes",
+  text = [[
+Les objets destructibles
+comme les buissons, herbe
+et autres sont
+synchronisés.
+Cependant, il est encore
+impossible de les porter.
+Allez à la bibliothèque
+pour en savoir plus!
+]]
+}
+
+dialog{
+  id = "sign_coco_house",
+  text = [[
+Un grand nombre d'ennemis
+peut-être synchronisé en
+même temps, de plus amples
+tests devraient être
+réalisés pour étudier la
+bande passante utilisée.
+]]
+}
+
+dialog{
+  id = "sign_in_coco_house",
+  text = [[
+Notez l'apparition des
+entités synchronisées en
+fondu. C'est que leur
+état est synchronisé
+après le chargement de
+la map. Pour des raisons
+de simplicité.
+]]
+}
+
+dialog{
+  id = "start_sign_online",
+  text = [[
+Bienvenue dans cette
+surcouche online du
+moteur solarus.
+Cette courte démo a été
+produite pour montrer ce
+qui marche et exposer le
+travail nécessaire pour
+faire marcher le reste.
+]]
+}
+

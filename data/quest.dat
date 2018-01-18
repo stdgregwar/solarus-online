@@ -1,0 +1,16 @@
+quest{
+  solarus_version = "1.6",
+  write_dir = "solarus-online",
+  title = "solarus-online",
+  short_description = "Demo of an online layer for solarus engine",
+  long_description = [[
+Using lua-socket and other lua library we managed to put solarus online. Or at least part of it.]],
+  author = "stdgregwar",
+  quest_version = "alpha",
+  release_date = "",
+  website = "",
+  normal_quest_size = "320x240",
+  min_quest_size = "320x240",
+  max_quest_size = "320x240",
+}
+

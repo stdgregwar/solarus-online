@@ -1,0 +1,18 @@
+text{ key = "selection_menu.back", value = "Back" }
+text{ key = "selection_menu.big_no", value = "NO" }
+text{ key = "selection_menu.big_yes", value = "YES" }
+text{ key = "selection_menu.cancel", value = "Cancel" }
+text{ key = "selection_menu.empty", value = "Empty" }
+text{ key = "selection_menu.erase", value = "Erase" }
+text{ key = "selection_menu.options", value = "Options" }
+text{ key = "selection_menu.options.language", value = "Language" }
+text{ key = "selection_menu.options.music_volume", value = "Music Volume" }
+text{ key = "selection_menu.options.sound_volume", value = "Sound Volume" }
+text{ key = "selection_menu.options.video_mode", value = "Video Mode" }
+text{ key = "selection_menu.phase.choose_mode", value = "Choose mode" }
+text{ key = "selection_menu.phase.choose_name", value = "Choose a name" }
+text{ key = "selection_menu.phase.confirm_erase", value = "Are you sure?" }
+text{ key = "selection_menu.phase.erase_file", value = "-Erase-" }
+text{ key = "selection_menu.phase.options", value = "Press Space to modify" }
+text{ key = "selection_menu.phase.options.changing", value = "<> : choose, Space : Validate" }
+text{ key = "selection_menu.phase.select_file", value = "Select a server" }

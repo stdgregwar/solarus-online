@@ -1,0 +1,9 @@
+animation{
+  name = "stopped",
+  src_image = "entities/firefly.png",
+  frame_delay = 100,
+  frame_to_loop_on = 0,
+  directions = {
+    { x = 0, y = 0, frame_width = 5, frame_height = 14, origin_x = 3, origin_y = 12, num_frames = 5 },
+  },
+}

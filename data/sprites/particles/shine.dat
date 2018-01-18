@@ -1,0 +1,7 @@
+animation{
+  name = "stopped",
+  src_image = "particles/shine.png",
+  directions = {
+    { x = 56, y = 0, frame_width = 248, frame_height = 240, origin_x = 0, origin_y = 0 },
+  },
+}

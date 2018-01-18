@@ -1,0 +1,18 @@
+text{ key = "selection_menu.back", value = "Retour" }
+text{ key = "selection_menu.big_no", value = "NON" }
+text{ key = "selection_menu.big_yes", value = "OUI" }
+text{ key = "selection_menu.cancel", value = "Annuler" }
+text{ key = "selection_menu.empty", value = "Vide" }
+text{ key = "selection_menu.erase", value = "Effacer" }
+text{ key = "selection_menu.options", value = "Options" }
+text{ key = "selection_menu.options.language", value = "Langue" }
+text{ key = "selection_menu.options.music_volume", value = "Volume de la musique" }
+text{ key = "selection_menu.options.sound_volume", value = "Volume des sons" }
+text{ key = "selection_menu.options.video_mode", value = "Mode vidéo" }
+text{ key = "selection_menu.phase.choose_mode", value = "Choisissez un mode de jeu" }
+text{ key = "selection_menu.phase.choose_name", value = "Quel est votre nom ?" }
+text{ key = "selection_menu.phase.confirm_erase", value = "Etes-vous sûr ?" }
+text{ key = "selection_menu.phase.erase_file", value = "Quel fichier voulez-vous effacer ?" }
+text{ key = "selection_menu.phase.options", value = "Appuyez sur Espace pour modifier" }
+text{ key = "selection_menu.phase.options.changing", value = "<  > : choisir, Espace : valider" }
+text{ key = "selection_menu.phase.select_file", value = "Veuillez choisir un serveur" }

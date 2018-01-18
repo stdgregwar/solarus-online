@@ -1,0 +1,38 @@
+properties{
+  x = 0,
+  y = 0,
+  width = 320,
+  height = 240,
+  min_layer = 0,
+  max_layer = 2,
+  tileset = "outside",
+}
+
+tile{
+  layer = 0,
+  x = 0,
+  y = 0,
+  width = 320,
+  height = 240,
+  pattern = "14667",
+}
+
+custom_entity{
+  layer = 0,
+  x = 168,
+  y = 141,
+  width = 16,
+  height = 16,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+destination{
+  name = "destination",
+  layer = 0,
+  x = 152,
+  y = 181,
+  direction = 1,
+}
+

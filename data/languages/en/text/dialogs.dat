@@ -1,0 +1,126 @@
+dialog{
+  id = "castle_coco_guy",
+  text = [[
+It's not fair to see
+all those young mens
+going into action while
+i'm stuck here carring
+for my chicks...
+]]
+}
+
+dialog{
+  id = "castle_npc_1",
+  text = [[
+Hey! $v! The NPCs are
+synchronised too!
+Wonderful isn't it? You
+would have noticed that
+the dialog box don't
+pause the game. After
+all, we can not pause
+everyone!
+]]
+}
+
+dialog{
+  id = "castle_npc_2",
+  text = [[
+Your name is $v or is it?
+I'm seeing plenty of
+risky people this morning.
+In addition, They are
+all clothed the same.
+]]
+}
+
+dialog{
+  id = "castle_npc_3",
+  text = [[
+I can't feel my feet
+anymore.
+I should take a break.
+]]
+}
+
+dialog{
+  id = "castle_seller",
+  text = [[
+I heard from a far and 
+remote land where the
+blooming trade of Olives
+bags trough troc had
+made many merchants
+richer than we could
+think of. I would like
+to start a business here
+, it lacks not customers.
+But I don't have
+olives bags...
+]]
+}
+
+dialog{
+  id = "sign_bridge",
+  text = [[
+North, a small demo
+donjon that use multi-
+player mechanics. Please
+note that this kind group
+donjon should be
+'instanciated'. But
+instances are still to
+be tested, thus this
+donjon belongs to main
+instance.
+]]
+}
+
+dialog{
+  id = "sign_bushes",
+  text = [[
+Destructibles like shrubs,
+grass and other are
+synchronised. But they
+can still not be lifted.
+Go to the library to 
+learn more about it!
+]]
+}
+
+dialog{
+  id = "sign_coco_house",
+  text = [[
+A great number of 
+ennemies can be
+synchronised at the same
+time, more tests should
+be runned to study
+bandwith and lag.
+]]
+}
+
+dialog{
+  id = "sign_in_coco_house",
+  text = [[
+Note fade-in appearance
+of synchronised entities.
+Their state is synced 
+after map loading. For 
+simplicity reasons.
+]]
+}
+
+dialog{
+  id = "start_sign_online",
+  text = [[
+Welcome in this online
+layer for Solarus Engine.
+This short demo has been
+made to demonstrate
+what's working and 
+expose the work that is
+still to be done.
+]]
+}
+
