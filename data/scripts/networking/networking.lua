@@ -27,6 +27,8 @@ local mob_utils = require'scripts/networking/mob_utils'
 -- hero network utils
 local hero_utils = require'scripts/networking/hero'
 
+local net_utils = require'scripts/networking/net_utils'
+
 --make send and receive raising error by default
 local function offline_send(data)
   print("Not connected : not sending")
@@ -467,9 +469,8 @@ function network.make_send(socket)
 end
 
 function network.make_receive(socket)
-  return function(pat)
-    pat = pat or "*l"
-    local data, err = socket:receive(pat)
+  return function()
+    local data, err = net_utils.receive_line(socket)
     if data then
       --print("Received " .. data)
       network.stats.ch_count_down = network.stats.ch_count_down + #data
@@ -478,7 +479,7 @@ function network.make_receive(socket)
       return msg -- TODO produce error answers on bad json format
     end
     if err then --TODO find a way for error handling
-      --return {type="error", err = err}
+      --print('error',err)
     end
   end
 end
