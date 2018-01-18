@@ -1,6 +1,6 @@
 # Solarus Online Layer
 
-This repository contains a demo and all source of an online layer to make the solarus engine online. This is still a work in progress, current features are listed below.
+This repository contains a demo and all source of an online layer to make the [solarus engine](https://github.com/solarus-games/solarus) online. This is still a work in progress, current features are listed below.
 
 ## Features
 
@@ -23,7 +23,10 @@ In practice the following engine entities are synchronisable :
 ## Demo
 
 The demo feature some simple maps trying to expose what's already feasible with
-the current state of the engine. Synchronised ennemies are to be tested.
+the current state of the engine.
+
+Lot of the ennemies and hud code is adapted from [ZSDX](https://github.com/solarus-games/zsdx)
+full credit for the ressources and scripts goes to their respective owners.
 
 ## How it's done
 
