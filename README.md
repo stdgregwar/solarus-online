@@ -1,8 +1,8 @@
-## Solarus Online Layer
+# Solarus Online Layer
 
-This repository contains a demo and all source of an online layer to make the solarus engine online. This is still a work in progress, current features are listed below.
+This repository contains a demo and all source of an online layer to make the [solarus engine](https://github.com/solarus-games/solarus) online. This is still a work in progress, current features are listed below.
 
-# Features
+## Features
 
 - server
 - fully working 'async' networking
@@ -20,25 +20,28 @@ In practice the following engine entities are synchronisable :
 - npcs
 - destructibles
 
-# Demo
+## Demo
 
 The demo feature some simple maps trying to expose what's already feasible with
-the current state of the engine. Synchronised ennemies are to be tested.
+the current state of the engine.
 
-# How it's done
+Lot of the ennemies and hud code is adapted from [ZSDX](https://github.com/solarus-games/zsdx)
+full credit for the ressources and scripts goes to their respective owners.
+
+## How it's done
 
 solarus-online make extensive use of the metatables to redefine the behaviour of
 all net-enabled entities. A lot of the events are also usefull to grasp engine
 state.
 
-## Ennemies, NPC, movable -> a.k.a MOBS
+### Ennemies, NPC, movable -> a.k.a MOBS
 
 MOBS, mobile objects, are declared to the server that then choose the player that
 will simulate the entity. The other players have a logicless puppet that replicate
 the movement of the remote ennemy. The reactions to attacks are computed by the
 so-called 'master mob' and broadcasted back to the 'slave-mobs'
 
-# What's to be done
+## What's to be done
 - better movement replication
 - better hero actions replication
 -- this is not hard to do but action replication is cumbersome

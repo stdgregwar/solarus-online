@@ -1,0 +1,30 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "a server for solarus-online",
+  "main": "index.js",
+  "dependencies": {
+    "guid": "0.0.12",
+    "node-uuid": "^1.4.8"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stdgregwar/solarus-online.git"
+  },
+  "keywords": [
+    "online",
+    "solarus",
+    "a-rpg",
+    "game"
+  ],
+  "author": "stdgregwar",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/stdgregwar/solarus-online/issues"
+  },
+  "homepage": "https://github.com/stdgregwar/solarus-online#readme"
+}
