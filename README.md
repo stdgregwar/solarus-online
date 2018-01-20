@@ -14,10 +14,10 @@ This repository contains a demo and all source of an online layer to make the [s
 
 In practice the following engine entities are synchronisable :
 - hero
--- simple sword
--- no jump,lift
+  - simple sword
+  - no jump,lift
 - ennemies
---respawn mechanics
+  - respawn mechanics
 - npcs
 - destructibles
 - maps
@@ -31,13 +31,15 @@ In addition to solarus-engine, the following lua libraries must be in your lua5.
 
 ### Server
 
-Server is runs on nodejs. You need nodejs and npm to install packages :
+Server runs on nodejs. You need nodejs and npm to install packages.
 
 ## Running the server
 
 ```
 #in 'server' folder
+#installing server dependencies
 npm install
+#running the server
 node index.js
 ```
 
@@ -50,7 +52,7 @@ selection menu. You can then select your server directly in game.
 
 ## Demo
 
-The demo feature some simple maps trying to expose what's already feasible with
+The demo feature some simple maps, including a short 'dungeon', trying to expose what's already feasible with
 the current state of the layer.
 
 Lot of the ennemies and hud code is adapted from [ZSDX](https://github.com/solarus-games/zsdx)
@@ -78,7 +80,9 @@ synchronised between clients. This is sufficient to garantee a synced map.
 ## What's to be done
 - better movement replication
 - better hero actions replication
--- this is not hard but action replication is cumbersome
+  - this is not hard but action replication is cumbersome
 - a proper save system
+- sync use of equipement
+- make every solarus entities work, or provide workaround
 - state for instances
 - a proper hud and chat
