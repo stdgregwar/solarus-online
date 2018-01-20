@@ -119,12 +119,12 @@ dialog{
 North, a small demo
 donjon that use multi-
 player mechanics. Please
-note that this kind group
-donjon should be
+note that this kind of 
+group dungeon should be
 'instanciated'. But
 instances are still to
 be tested, thus this
-donjon belongs to main
+dungeon belongs to main
 instance.
 ]]
 }
