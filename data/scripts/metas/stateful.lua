@@ -181,7 +181,7 @@ function stateful.setup_meta(meta)
   function meta:watch_state_vals(...)
     local arg = table.pack(...)
     local handler
-    local function call_handler()
+    local function call_handler(rk,v,old)
       local pack = {}
       for i,k in ipairs(arg) do
         pack[i] = self.state[k]

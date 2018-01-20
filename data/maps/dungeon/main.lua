@@ -21,15 +21,22 @@ function map:reset()
   self.state.top_door = nil
 end
 
+local secret
+
 map:watch_state_vals(
   'tmp_door_right','door_right',
   function(tmp_dr,dr)
     map:open_close_doors('door_right',tmp_dr or dr)
-    if dr then
-      sol.audio.play_sound('secret')
-    end
   end
 )
+
+map:watch_state_val(
+  'door_right',
+  function(dr,old)
+    if dr and not old then
+      sol.audio.play_sound('secret')
+    end
+end)
 
 map:state_to_door('door_key','door_key')
 

@@ -19,7 +19,10 @@ function net_stats:set_dst_position(ax,ay)
 end
 
 function net_stats:get_surface()
-  return self.text;
+  return {
+    set_opacity = function()
+    end
+  }
 end
 
 function net_stats:new(game,config)
