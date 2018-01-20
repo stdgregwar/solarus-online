@@ -10,6 +10,8 @@ local map_meta = sol.main.get_metatable("map")
 stateful.setup_meta(map_meta)
 actions.setup_meta(map_meta)
 
+map_meta.state_is_shared = true
+
 -------------------------------------------------------------
 -- when map is fully loaded, go trough all enemies and
 -- declare them to server
@@ -102,6 +104,42 @@ function map_meta:enable_from_state(tb,predicate)
       ent:set_enabled(predicate(state_v))
     end
   end
+end
+
+
+-- map state, utils etc
+function map_meta:open_close_doors(prefix,b)
+  if b then
+    self:open_doors(prefix)
+  else
+    self:close_doors(prefix)
+  end
+end
+
+function map_meta:switch_to_state(sw,key)
+  local map = self
+  local key = key or sw:get_name()
+  function sw:on_activated()
+    map.state[key] = true
+  end
+  function sw:on_inactivated()
+    map.state[key] = nil
+  end
+end
+
+function map_meta:switch_to_door(sw,door_prefix)
+  local state_key = sw:get_name()
+  self:switch_to_state(sw,state_key)
+  self:state_to_door(state_key,door_prefix)
+end
+
+function map_meta:state_to_door(key,door_prefix)
+  self:watch_state_val(
+    key,
+    function(val)
+      self:open_close_doors(door_prefix,val)
+    end
+  )
 end
 
 

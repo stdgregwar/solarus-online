@@ -6267,8 +6267,8 @@ tile{
 destination{
   name = "spawn",
   layer = 0,
-  x = 120,
-  y = 645,
+  x = 408,
+  y = 149,
   direction = 3,
 }
 
@@ -6347,14 +6347,6 @@ destination{
   x = 584,
   y = 381,
   direction = 3,
-}
-
-enemy{
-  layer = 0,
-  x = 384,
-  y = 157,
-  direction = 0,
-  breed = "blue_knight_soldier",
 }
 
 enemy{
@@ -7150,6 +7142,33 @@ npc{
   subtype = 1,
   sprite = "npc/static_villager8",
   behavior = "dialog#castle_coco_guy",
+}
+
+destination{
+  name = "from_dungeon",
+  layer = 0,
+  x = 384,
+  y = 109,
+  direction = 3,
+}
+
+teletransporter{
+  layer = 0,
+  x = 376,
+  y = 88,
+  width = 16,
+  height = 16,
+  destination_map = "dungeon/entrance",
+  destination = "from_castle",
+}
+
+destination{
+  name = "dungeon_end",
+  layer = 0,
+  x = 56,
+  y = 133,
+  direction = 1,
+  sprite = "entities/destination",
 }
 
 tile{

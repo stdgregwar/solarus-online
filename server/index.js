@@ -110,6 +110,12 @@ const handlers = {
         const state = socket.state.get_raw();
         socket.send({type:'get_hero_state_qa',qn:msg.qn,state:state});
     },
+    get_map_state : function(socket,msg) {
+        const map = socket.instance.maps.maps_by_id[msg.map_id];
+        if(typeof map == 'object') {
+            socket.send({type:'get_map_state_qa',qn:msg.qn,state:map.state.get_raw()});
+        }
+    },
     map_state : function(socket,msg) {
         socket.map.map_state(socket,msg);
     },

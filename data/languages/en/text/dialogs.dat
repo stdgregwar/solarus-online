@@ -61,6 +61,21 @@ olives bags...
 }
 
 dialog{
+  id = "ganon_final",
+  text = [[
+It's already over,
+budget cuts you know.
+My dungeons seems to get
+shorter and shorter...
+but my architect sold me
+this one saying that no
+alone hero would get
+trough even the first
+room...
+]]
+}
+
+dialog{
   id = "sign_bridge",
   text = [[
 North, a small demo

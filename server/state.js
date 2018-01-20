@@ -28,6 +28,7 @@ class State {
                 delete this.state[k];
             }
         }
+        //console.log('updated state : ' + JSON.stringify(this.state));
     }
 
     update_from_msg(msg,send) {

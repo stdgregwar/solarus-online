@@ -1,10 +1,13 @@
 map{ id = "castle", description = "Castle" }
 map{ id = "coco_house", description = "Cocouse" }
+map{ id = "dungeon/entrance", description = "Temple entrance" }
+map{ id = "dungeon/main", description = "Dungeon main rooms" }
 map{ id = "first_map", description = "First map" }
 map{ id = "library", description = "library" }
 map{ id = "temple", description = "Temple" }
 map{ id = "test_map", description = "Empty test map" }
 
+tileset{ id = "blue", description = "blue" }
 tileset{ id = "brown", description = "brown" }
 tileset{ id = "cave", description = "Cave" }
 tileset{ id = "dungeon_blue", description = "Dungeon (blue)" }
@@ -63,6 +66,7 @@ sprite{ id = "entities/stone_black_skull", description = "Stone (black skull)" }
 sprite{ id = "entities/stone_white", description = "Stone (white)" }
 sprite{ id = "entities/stone_white_skull", description = "Stone (white skull)" }
 sprite{ id = "entities/switch", description = "Switch" }
+sprite{ id = "entities/switch_crystal", description = "Crystal Skin Switch" }
 sprite{ id = "entities/teletransporter", description = "Teletransporter" }
 sprite{ id = "entities/vase", description = "Vase" }
 sprite{ id = "entities/vase_skull", description = "Vase (skull)" }
@@ -238,6 +242,7 @@ sound{ id = "world_warp", description = "world_warp" }
 sound{ id = "wrong", description = "wrong" }
 sound{ id = "zora", description = "zora" }
 
+item{ id = "small_key", description = "Small Key" }
 
 enemy{ id = "blue_knight_soldier", description = "blue_knight_soldier" }
 enemy{ id = "chicken", description = "chicken" }
@@ -246,6 +251,7 @@ enemy{ id = "tentacle", description = "Tentacle" }
 entity{ id = "alter_hero", description = "alter_hero" }
 entity{ id = "animation", description = "just an animation" }
 entity{ id = "destructible", description = "Net synced destructible" }
+entity{ id = "toggle_switch", description = "Toggle Switch" }
 
 language{ id = "en", description = "English" }
 language{ id = "fr", description = "Français" }

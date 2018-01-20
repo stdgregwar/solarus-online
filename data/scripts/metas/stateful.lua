@@ -17,9 +17,8 @@ function stateful.setup_meta(meta)
   function meta:declare_to_network(prefix)
     local id = network.set_net_id(self)
     local function setup_state(state)
-      self:setup_net_state(state,prefix)
       network.register_state(self)
-      safe(self.on_restore_from_state)(self,self.state)
+      self:init_state(state,prefix)
     end
     network.get_state(id,prefix,setup_state)
   end
@@ -46,7 +45,14 @@ function stateful.setup_meta(meta)
     local s = rawget(self.state,'__state')
     local diff_size = #d.new+#d.rem+#d.mod+3
     local state_size = #s
-    return diff_size < state_size 
+    return (diff_size < state_size or self.state_is_shared)
+      and not self.send_full_state
+  end
+
+
+  function meta:init_state(state,prefix)
+    self:setup_net_state(state,prefix)
+    safe(self.on_restore_from_state)(self,self.state)
   end
 
   -- make an automatically sended table with a table proxy
@@ -127,7 +133,7 @@ function stateful.setup_meta(meta)
   -------------------------------------------------------
   function meta:update_state(state)
     --TODO take differential states in account
-    local old_state = rawget(self.state,'__state')
+    local old_state = self.state and rawget(self.state,'__state') or {}
     local diff = state.diff or table_diff(old_state,state.state)
     --set the new state in state proxy
     if state.diff then
@@ -155,9 +161,41 @@ function stateful.setup_meta(meta)
   -- function handler(new_val,[old_val])
   -- please note new val could be nil if key was removed
   ----------------------------------------------------
-  function meta:set_state_val_change_handler(key,handler)
+  function meta:watch_state_val(key,handler,overwrite)
     self.__state_handlers = self.__state_handlers or {}
-    self.__state_handlers[key] = handler
+    if overwrite then
+      self.__state_handler[key] = handler
+    else
+      local previous_handler = self.__state_handlers[key] or function() end
+      self.__state_handlers[key] = function(...)
+        return previous_handler(...) or handler(...)
+      end
+    end
+  end
+
+  -----------------------------------------------------
+  -- watch for a bunch of state values to change
+  -- watch_vals(k1,k2,...,kn,handler)
+  -- handler(v1,v2,...,vn)
+  -----------------------------------------------------
+  function meta:watch_state_vals(...)
+    local arg = table.pack(...)
+    local handler
+    local function call_handler()
+      local pack = {}
+      for i,k in ipairs(arg) do
+        pack[i] = self.state[k]
+      end
+      pack.n = arg.n
+      handler(unpack(pack))
+    end
+    for _,k in ipairs(arg) do
+      handler = k --to get last arg as handler
+      if type(k) ~= 'function' then
+        self:watch_state_val(k,call_handler)
+      end
+    end
+    assert(type(handler) == 'function','values handler must be a function')
   end
 
   return meta

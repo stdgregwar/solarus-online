@@ -5,7 +5,6 @@ animation{
     { x = 48, y = 0, frame_width = 16, frame_height = 16, origin_x = 8, origin_y = 13 },
   },
 }
-
 animation{
   name = "blue_lowered",
   src_image = "entities/miscellaneous.png",
@@ -13,4 +12,3 @@ animation{
     { x = 64, y = 0, frame_width = 16, frame_height = 16, origin_x = 8, origin_y = 13 },
   },
 }
-

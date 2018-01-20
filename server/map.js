@@ -76,17 +76,12 @@ class Map{
         this.heroes.push(client);
         client.map_id = this.map_id;
         client.map = this;
-        if(!this.master) {
-            this.master = client;
-            this.send_map_own(client,'map_master');
-        } else {
-            this.send_map_own(client,'map_slave');
-        }
+        this.send_map_own(client,'map_state_init');
         log(client.guid + ' added arrived in "' + this.map_id + '"');
     }
 
     send_map_own(client,type) {
-        client.send({type:type,map_id:this.map_id,state:this.state});
+        client.send({type:type,map_id:this.map_id,state:this.state.get_raw()});
     }
 
     choose_new_master(old) {

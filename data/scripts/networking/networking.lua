@@ -187,7 +187,7 @@ end
 function handlers:remote_mob(msg)
   local mob = self.mobs[msg.mob_id];
   if mob then
-    print("Mob .. " .. msg.mob_id:sub(8) .. "(...) is remote controlled")
+    --print("Mob .. " .. msg.mob_id:sub(8) .. "(...) is remote controlled")
     mob:on_remote_prom(msg.state)
     local name = msg.mob_id:sub(0,8) .. "... [rem]"
     mob:set_displayed_name(name)
@@ -200,7 +200,7 @@ end
 function handlers:master_mob(msg)
   local mob = self.mobs[msg.mob_id];
   if mob then
-    print("Mob .. " .. msg.mob_id .. " is master")
+    --print("Mob .. " .. msg.mob_id .. " is master")
     mob:on_master_prom(msg.state) --forward optionnal state, TODO : test this later
     local name = msg.mob_id:sub(0,8) .. "... [mas]"
     mob:set_displayed_name(name)
@@ -242,19 +242,9 @@ function handlers:mob_state(msg)
   end
 end
 
-function handlers:map_master(msg)
-  -- TODO prepare map master
+function handlers:map_state_init(msg)
   if msg.map_id == network.current_map:get_id() then
-    local map = network.current_map
-    map:on_master_prom(msg.state)
-  end
-end
-
-function handlers:map_slave(msg)
-  -- TODO prepare map slave
-  if msg.map_id == network.current_map:get_id() then
-    local map = network.current_map
-    map:on_slave_prom(msg.state)
+    network.current_map:init_state(msg.state,'map')
   end
 end
 
@@ -271,6 +261,10 @@ end
 
 function handlers:get_hero_state_qa(msg)
   network.querry_answer(msg.qn,msg)
+end
+
+function handlers:get_map_state_qa(msg)
+  netork.querry_answer(msg.qn,msg)
 end
 
 function handlers:map_action(msg)
@@ -323,7 +317,6 @@ end
 function network.has_mob(entity)
   local map_id = entity:get_map():get_id()
   local name = network.set_net_id(entity) --get entity name if provided by map
-  print('Asking for mob',name)
   network.send{type='has_mob',mob_id=name,map_id=map_id}
   handlers.mobs[name] = entity;
 end
@@ -333,7 +326,6 @@ function network.has_not_mob(entity)
   local net_id = entity.net_id
   if not net_id then return end
   local map_id = entity:get_map():get_id()
-  print("Revoking mob " .. net_id)
   network.send{type="has_not_mob",mob_id=net_id,map_id=map_id}
   handlers.mobs[entity.net_id] = nil
 end
@@ -351,8 +343,10 @@ function network.on_game_started(game)
     print("Map changed to " .. map:get_id())
     handlers.heroes = {} -- Empty alter_heroes list
 
+
     --save current map
     network.current_map = map
+    map.net_id = map:get_id()
 
     hero.displayed_name = game:get_value('player_name')
     hero.net_id = network.guid
@@ -388,12 +382,12 @@ local sendable_states = {}
 
 --add a state to send list
 function network.register_sendable_state(stateful)
-  sendable_states[stateful.net_id] = stateful
+  table.insert(sendable_states,stateful)
 end
 
 --send all state packets registered for this frame
 function network.send_state_changes()
-  for _,s in pairs(sendable_states) do
+  for _,s in ipairs(sendable_states) do
     s:send()
   end
   sendable_states = {}
@@ -452,8 +446,14 @@ end
 -- blacklist some packet to avoid polluting the logs
 local log_blacklist = {
   hero_move = true,
+  has_mob = true,
+  has_not_mob = true,
+  --master_mob = true,
+  --remote_mob = true,
   hero_state = true,
   mob_state = true,
+  get_mob_state = true,
+  get_mob_state_qa = true,
   mob_move = true,
   ends = true
 }
@@ -471,7 +471,6 @@ function network.make_receive(socket)
   return function()
     local data, err = net_utils.receive_line(socket)
     if data then
-      --print("Received " .. data)
       network.stats.ch_count_down = network.stats.ch_count_down + #data
       local msg = json.decode(data)
       if not log_blacklist[msg.type] then print(data) end
@@ -505,7 +504,13 @@ function network.make_server(socket,handlers)
       if network.simulate_laggy then
         delayed_call(200,f,handlers,msg)
       else
-        f(handlers,msg,server)
+        local ok,err = xpcall(
+          function() f(handlers,msg,server) end,
+          debug.traceback
+        )
+        if not ok then
+          print('ERROR in message handling',err)
+        end
       end
     end
   end

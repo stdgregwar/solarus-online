@@ -15,6 +15,8 @@ enemy_meta.__remove_life = enemy_meta.remove_life
 enemy_meta.__add_life = enemy_meta.add_life
 enemy_meta.__get_life = enemy_meta.get_life
 
+enemy_meta.send_full_state = true
+
 ------------------------------------------------
 -- replace all life-related primitives by
 -- server-synced ones, this allow to transmit life
@@ -111,7 +113,7 @@ function enemy_meta:__ensure_sprite_vars()
   self.__sprite_count = self.__sprite_count or 0
 end
 
-enemy_meta.respawn_time = 10;
+enemy_meta.respawn_time = 120;
 
 -------------------------------------------------------------------
 -- tells if the mob should respawn given the state from the server
@@ -124,7 +126,7 @@ end
 -- makes the master mob respawn, restarting its simulation
 ------------------------------------------------------------
 function enemy_meta:master_respawn()
-  self:set_life(self.max_life)
+  self:set_life(self.max_life or 1)
   self:set_enabled(true)
   network.send({type='mob_activated',mob_id=self.net_id})
   safe(self.on_mob_restarted)(self)
@@ -136,7 +138,7 @@ function enemy_meta:set_enabled(en)
   old_enabled(self,en)
   if (en == nil or (en ~= nil and en)) and not was_en then
     for _,s in self:get_sprites() do
-      s:fade_in(5)
+      s:fade_in(10)
     end
   end
 end
@@ -161,6 +163,9 @@ function enemy_meta:on_master_prom(op_state) --replace mob:on_master_prom
   mutils.make_mob_master_basics(self,self.net_id,network)
   -- setup network-synchronised state
   self:setup_net_state(op_state)
+
+
+  self.state.death_time = self.state.death_time or 0
 
   --restore sprite conseqs (in case mob was remote before)
   self:restore_sprites_conseqs()

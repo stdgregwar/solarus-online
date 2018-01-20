@@ -14,8 +14,8 @@ function initial_game:initialize_new_savegame(game)
 
   -- You can modify this function to set the initial life and equipment
   -- and the starting location.
-  game:set_starting_location("castle","spawn")
-  --game:set_starting_location("test_map","destination")
+  --game:set_starting_location("castle","spawn")
+  game:set_starting_location("dungeon/entrance","from_castle")
 
   game:set_max_life(999)
   game:set_life(game:get_max_life())

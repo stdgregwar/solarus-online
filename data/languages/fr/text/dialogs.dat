@@ -64,6 +64,20 @@ de sacs d'olives...
 }
 
 dialog{
+  id = "ganon_final",
+  text = [[
+Et oui c'est déjà fini,
+avec les restrictions
+budgetaires, mes donjons
+sont réduis à peau de
+chagrin... j'étais
+pourtant sur qu'il était 
+impossible de parvenir
+jusqu'ici seul...
+]]
+}
+
+dialog{
   id = "sign_bridge",
   text = [[
 Au nord, un petit donjon

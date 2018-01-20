@@ -45,6 +45,7 @@ function sol.main:on_started()
 end
 
 function sol.main:start_game(game,server)
+  sol.main.game = game
   local co_screen = require("scripts/menus/connection_screen")
   sol.menu.start(self,co_screen)
   co_screen:connect(server.host,server.port,game)
@@ -119,4 +120,52 @@ function sol.language.get_menu_font(language)
   end
 
   return font, size
+end
+
+function sol.main.is_debug_enabled()
+  return true
+end
+
+-- If debug is enabled, the shift key skips dialogs
+-- and the control key traverses walls.
+local hero_movement = nil
+local ctrl_pressed = false
+function sol.main:on_update()
+
+  if sol.main.is_debug_enabled() then
+    local game = sol.main.game
+    if game ~= nil then
+
+      if game:is_dialog_enabled() then
+        if sol.input.is_key_pressed("left shift") or sol.input.is_key_pressed("right shift") then
+          game.dialog_box:show_all_now()
+        end
+      end
+
+      local hero = game:get_hero()
+      if hero ~= nil then
+        if hero:get_movement() ~= hero_movement then
+          -- The movement has changed.
+          hero_movement = hero:get_movement()
+          if hero_movement ~= nil
+              and ctrl_pressed
+              and not hero_movement:get_ignore_obstacles() then
+            -- Also traverse obstacles in the new movement.
+            hero_movement:set_ignore_obstacles(true)
+          end
+        end
+        if hero_movement ~= nil then
+          if not ctrl_pressed
+              and (sol.input.is_key_pressed("left control") or sol.input.is_key_pressed("right control")) then
+            hero_movement:set_ignore_obstacles(true)
+            ctrl_pressed = true
+          elseif ctrl_pressed
+              and (not sol.input.is_key_pressed("left control") and not sol.input.is_key_pressed("right control")) then
+            hero_movement:set_ignore_obstacles(false)
+            ctrl_pressed = false
+          end
+        end
+      end
+    end
+  end
 end

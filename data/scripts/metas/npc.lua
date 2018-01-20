@@ -6,13 +6,10 @@ local npc_meta = sol.main.get_metatable("npc")
 mob.setup_meta(npc_meta)
 
 function npc_meta:on_created()
-
   local name = self:get_name()
   if name == nil then
     return
   end
-
-  print('NPC CREATED',name)
 
   if name:find("walking_npc") then
     self:random_walk()
@@ -32,8 +29,6 @@ end
 
 -- Makes the NPC randomly walk with the given optional speed.
 function npc_meta:random_walk(speed)
-
-  print('RANDOM WALK')
   local movement = sol.movement.create("random_path")
 
   if speed ~= nil then

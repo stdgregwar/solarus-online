@@ -112,7 +112,7 @@ function entity:play_destroy_anim()
   sprite:set_animation('destroy',function() self:set_visible(false) end)
 end
 
-entity:set_state_val_change_handler(
+entity:watch_state_val(
   'absent',
   function(absent)
     if absent and not entity.real:destroyed() then

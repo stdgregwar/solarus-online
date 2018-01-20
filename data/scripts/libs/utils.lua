@@ -1,5 +1,9 @@
 local utils = {}
 
+function table.pack(...)
+  return {n=select('#',...),...}
+end
+
 function utils.xy_from_dir(dir)
   if dir == 0 then
     return 1,0

@@ -42,7 +42,7 @@ local draw_sword_states = {
   ['sword tapping'] = true,
 }
 
-entity:set_state_val_change_handler(
+entity:watch_state_val(
   'state',
   function(state)
     local draw_sword = state:find('sword') and true or false
@@ -51,7 +51,7 @@ entity:set_state_val_change_handler(
   end
 )
 
-entity:set_state_val_change_handler(
+entity:watch_state_val(
   'dir',
   function(dir)
     if type(dir) == 'number' then
@@ -67,8 +67,9 @@ end
 
 function entity:declare_to_network()
   local id = network.set_net_id(self)
+  self:setup_simple_state({})
   local function setup_state(state)
-    self:setup_simple_state(state,prefix)
+    self:setup_simple_state(state)
   end
   network.get_state(id,'hero',setup_state)
 end
