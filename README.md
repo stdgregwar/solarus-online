@@ -6,7 +6,8 @@ This repository contains a demo and all source of an online layer to make the [s
 
 - server
 - fully working 'async' networking
-- asymetric world simulation (see below)
+- asymetric mob simulation (see below)
+- symetric map,object simulation
 - movement replication primitives
 - api adaptation for multiplayer aware ennemies
 - network synchronised states and actions
@@ -14,16 +15,43 @@ This repository contains a demo and all source of an online layer to make the [s
 In practice the following engine entities are synchronisable :
 - hero
 -- simple sword
--- no jump,lift,spin-attack
+-- no jump,lift
 - ennemies
-- respawn mechanics
+--respawn mechanics
 - npcs
 - destructibles
+- maps
+
+## Dependencies
+
+### Client
+In addition to solarus-engine, the following lua libraries must be in your lua5.1 path:
+- luasocket
+- luajson
+
+### Server
+
+Server is runs on nodejs. You need nodejs and npm to install packages :
+
+## Running the server
+
+```
+#in 'server' folder
+npm install
+node index.js
+```
+
+You can edit 'server_settings' to choose port and welcome message for your server.
+
+## Connecting to a server
+
+The serverlist.lua file contains a list of three servers that shows in the server
+selection menu. You can then select your server directly in game.
 
 ## Demo
 
 The demo feature some simple maps trying to expose what's already feasible with
-the current state of the engine.
+the current state of the layer.
 
 Lot of the ennemies and hud code is adapted from [ZSDX](https://github.com/solarus-games/zsdx)
 full credit for the ressources and scripts goes to their respective owners.
@@ -41,9 +69,16 @@ will simulate the entity. The other players have a logicless puppet that replica
 the movement of the remote ennemy. The reactions to attacks are computed by the
 so-called 'master mob' and broadcasted back to the 'slave-mobs'
 
+### Maps
+
+When writing online-map scripts, you provide information about how your map react
+to state change and how actions of you player alter map state. As the state is
+synchronised between clients. This is sufficient to garantee a synced map.
+
 ## What's to be done
 - better movement replication
 - better hero actions replication
--- this is not hard to do but action replication is cumbersome
+-- this is not hard but action replication is cumbersome
 - a proper save system
 - state for instances
+- a proper hud and chat

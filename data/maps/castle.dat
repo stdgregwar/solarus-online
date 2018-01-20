@@ -6267,8 +6267,8 @@ tile{
 destination{
   name = "spawn",
   layer = 0,
-  x = 408,
-  y = 149,
+  x = 88,
+  y = 749,
   direction = 3,
 }
 
@@ -7131,7 +7131,7 @@ npc{
   y = 253,
   direction = 3,
   subtype = 0,
-  behavior = "dialog#sign_bushes",
+  behavior = "dialog#sign_bridge",
 }
 
 npc{

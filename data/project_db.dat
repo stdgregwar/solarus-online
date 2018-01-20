@@ -2,10 +2,8 @@ map{ id = "castle", description = "Castle" }
 map{ id = "coco_house", description = "Cocouse" }
 map{ id = "dungeon/entrance", description = "Temple entrance" }
 map{ id = "dungeon/main", description = "Dungeon main rooms" }
-map{ id = "first_map", description = "First map" }
 map{ id = "library", description = "library" }
 map{ id = "temple", description = "Temple" }
-map{ id = "test_map", description = "Empty test map" }
 
 tileset{ id = "blue", description = "blue" }
 tileset{ id = "brown", description = "brown" }

@@ -712,6 +712,24 @@ teletransporter{
   destination = "from_library",
 }
 
+npc{
+  layer = 0,
+  x = 72,
+  y = 69,
+  direction = 3,
+  subtype = 1,
+  sprite = "npc/static_villager1",
+}
+
+npc{
+  layer = 0,
+  x = 72,
+  y = 93,
+  direction = 3,
+  subtype = 0,
+  behavior = "dialog#library",
+}
+
 tile{
   layer = 1,
   x = 136,

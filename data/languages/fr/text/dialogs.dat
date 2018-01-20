@@ -64,6 +64,24 @@ de sacs d'olives...
 }
 
 dialog{
+  id = "dungeon_entrance",
+  text = [[
+Deux interrupteurs...
+il faudrait que tu
+entres avec un compagon.
+]]
+}
+
+dialog{
+  id = "dungeon_main_room",
+  text = [[
+Se... séparer.... pour
+trouver...
+des indices..
+]]
+}
+
+dialog{
   id = "ganon_final",
   text = [[
 Et oui c'est déjà fini,
@@ -74,6 +92,27 @@ chagrin... j'étais
 pourtant sur qu'il était 
 impossible de parvenir
 jusqu'ici seul...
+]]
+}
+
+dialog{
+  id = "library",
+  text = [[
+Oh mon petit $v.
+Tu veux des détails sur
+le projet n'est-ce pas?
+C'est que ce n'est pas 
+le format le plus simple
+pour en parler. Disons
+que cette démo est une
+alpha des plus juvéniles
+Avec son lot de bug et
+de problèmes. Mais le
+fait est qu'il me semble
+qu'il y ait du potentiel.
+Va donc te renseigner sur
+le forum solarus ou
+github!
 ]]
 }
 

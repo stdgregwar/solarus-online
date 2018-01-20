@@ -61,6 +61,24 @@ olives bags...
 }
 
 dialog{
+  id = "dungeon_entrance",
+  text = [[
+Two pressure plates...
+you should bring someone
+with you here...
+]]
+}
+
+dialog{
+  id = "dungeon_main_room",
+  text = [[
+Part... the team...
+to find...
+clues...
+]]
+}
+
+dialog{
   id = "ganon_final",
   text = [[
 It's already over,
@@ -72,6 +90,26 @@ this one saying that no
 alone hero would get
 trough even the first
 room...
+]]
+}
+
+dialog{
+  id = "library",
+  text = [[
+Oh dear $v.
+You want some details
+about the project do
+you? It's not the best
+place to explain what's
+going on. This demo is
+a really early alpha.
+With plenty of bugs and
+problems. But we cannot
+deny that there isn't 
+any potential!
+Go read more about it on
+solarus forums or on 
+github!
 ]]
 }
 

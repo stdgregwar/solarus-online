@@ -13,6 +13,13 @@ function enemy:on_mob_created()
   enemy:create_sprite("enemies/" .. enemy:get_breed())
   enemy:set_size(16, 16)
   enemy:set_origin(8, 13)
+  function enemy:on_obstacle_reached(movement)
+    if not angry then
+      enemy:go_random()
+    else
+      enemy:go_angry()
+    end
+  end
 end
 
 function enemy:on_movement_changed(movement)
@@ -21,14 +28,6 @@ function enemy:on_movement_changed(movement)
   sprite:set_direction(direction4)
 end
 
-function enemy:on_obstacle_reached(movement)
-
-  if not angry then
-    enemy:go_random()
-  else
-    enemy:go_angry()
-  end
-end
 
 function enemy:on_mob_restarted()
 
@@ -56,9 +55,11 @@ end
 
 function enemy:go_angry()
   angry = true
-  map.angry_chickens = true
+  map.state.angry_chickens = true
   going_hero = true
+  local hero = map:get_nearest_hero()
   local movement = sol.movement.create("target")
+  movement:set_target(hero)
   movement:set_speed(96)
   movement:start(enemy)
   enemy:get_sprite():set_animation("angry")
@@ -66,10 +67,9 @@ function enemy:go_angry()
 end
 
 function enemy:on_hurt()
-
   num_times_hurt = num_times_hurt + 1
-  if num_times_hurt == 3 and not map.angry_chickens then
+  --if num_times_hurt == 3 and not map.angry_chickens then
     -- Make all chickens of the map attack the hero.
-    map.angry_chickens = true
-  end
+    --map.state.angry_chickens = true
+  --end
 end

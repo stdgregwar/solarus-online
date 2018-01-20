@@ -2683,6 +2683,15 @@ door{
   sprite = "entities/door_normal",
 }
 
+npc{
+  layer = 0,
+  x = 392,
+  y = 997,
+  direction = 3,
+  subtype = 0,
+  behavior = "dialog#dungeon_main_room",
+}
+
 tile{
   layer = 1,
   x = 416,
