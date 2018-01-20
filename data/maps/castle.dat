@@ -7171,6 +7171,105 @@ destination{
   sprite = "entities/destination",
 }
 
+custom_entity{
+  layer = 0,
+  x = 488,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+custom_entity{
+  layer = 0,
+  x = 504,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+custom_entity{
+  layer = 0,
+  x = 520,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+custom_entity{
+  layer = 0,
+  x = 536,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+custom_entity{
+  layer = 0,
+  x = 552,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+custom_entity{
+  layer = 0,
+  x = 568,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+custom_entity{
+  layer = 0,
+  x = 584,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+custom_entity{
+  layer = 0,
+  x = 616,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
+custom_entity{
+  layer = 0,
+  x = 600,
+  y = 765,
+  width = 8,
+  height = 8,
+  direction = 0,
+  sprite = "entities/bush",
+  model = "destructible",
+}
+
 tile{
   layer = 1,
   x = 368,
