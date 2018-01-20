@@ -2,6 +2,8 @@
 
 This repository contains a demo and all source of an online layer to make the [solarus engine](https://github.com/solarus-games/solarus) online. This is still a work in progress, current features are listed below.
 
+![screenshot](https://github.com/stdgregwar/solarus-online/raw/master/screen1.png)
+
 ## Features
 
 - server
