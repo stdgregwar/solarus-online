@@ -48,4 +48,10 @@ function map:on_restore_from_state(state)
       map:reset()
     end
   end
+  --strange work around
+  function sensor_return:on_activated()
+    local x,y = map:get_hero():get_position()
+    map:get_hero():set_position(0,0,0)
+    map:get_hero():teleport('castle','from_dungeon')
+  end
 end

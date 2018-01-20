@@ -3,10 +3,11 @@ properties{
   y = 1200,
   width = 320,
   height = 240,
-  min_layer = -1,
+  min_layer = -6,
   max_layer = 1,
   world = "dungeon",
   tileset = "blue",
+  music = "cave",
 }
 
 tile{
@@ -484,6 +485,7 @@ switch{
   y = 120,
   subtype = "walkable",
   sprite = "entities/switch",
+  sound = "switch",
   needs_block = false,
   inactivate_when_leaving = true,
 }
@@ -495,6 +497,7 @@ switch{
   y = 120,
   subtype = "walkable",
   sprite = "entities/switch",
+  sound = "switch",
   needs_block = false,
   inactivate_when_leaving = true,
 }
@@ -505,16 +508,6 @@ destination{
   x = 160,
   y = 173,
   direction = 1,
-}
-
-teletransporter{
-  layer = -1,
-  x = 152,
-  y = 176,
-  width = 16,
-  height = 16,
-  destination_map = "castle",
-  destination = "from_dungeon",
 }
 
 stairs{
@@ -541,6 +534,15 @@ npc{
   direction = 3,
   subtype = 0,
   behavior = "dialog#dungeon_entrance",
+}
+
+sensor{
+  name = "sensor_return",
+  layer = -1,
+  x = 160,
+  y = 189,
+  width = 16,
+  height = 16,
 }
 
 tile{

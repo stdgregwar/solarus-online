@@ -84,8 +84,14 @@ sprite{ id = "hero/trail", description = "Hero trail" }
 sprite{ id = "hero/tunic1", description = "Hero tunic 1" }
 sprite{ id = "hero/tunic2", description = "Hero tunic 2" }
 sprite{ id = "hero/tunic3", description = "Hero tunic 3" }
+sprite{ id = "hud/action_icon_flip", description = "hud/action_icon_flip" }
 sprite{ id = "hud/dialog_box_message_end", description = "hud/dialog_box_message_end" }
+sprite{ id = "hud/empty_heart", description = "hud/empty_heart" }
 sprite{ id = "hud/gameover_fade", description = "HUD: Game-over fade" }
+sprite{ id = "hud/heart", description = "hud/heart" }
+sprite{ id = "hud/magic_bar", description = "hud/magic_bar" }
+sprite{ id = "hud/pause_icon_flip", description = "hud/pause_icon_flip" }
+sprite{ id = "hud/sword_icon_flip", description = "hud/sword_icon_flip" }
 sprite{ id = "menus/hero_head", description = "Menu: hero head" }
 sprite{ id = "menus/solarus_logo", description = "Solarus logo" }
 sprite{ id = "npc/ganon", description = "Ganon" }
@@ -240,6 +246,7 @@ sound{ id = "world_warp", description = "world_warp" }
 sound{ id = "wrong", description = "wrong" }
 sound{ id = "zora", description = "zora" }
 
+item{ id = "rupee_bag", description = "rupee_bag" }
 item{ id = "small_key", description = "Small Key" }
 
 enemy{ id = "blue_knight_soldier", description = "blue_knight_soldier" }
@@ -256,6 +263,10 @@ language{ id = "fr", description = "Français" }
 
 font{ id = "alttp", description = "alttp" }
 font{ id = "arial", description = "arial" }
+font{ id = "green_digits", description = "Green digits" }
 font{ id = "la", description = "la" }
 font{ id = "minecraftia", description = "minecraftia" }
+font{ id = "small_green_digits", description = "small_green_digits" }
+font{ id = "small_white_digits", description = "small_white_digits" }
+font{ id = "white_digits", description = "white_digits" }
 

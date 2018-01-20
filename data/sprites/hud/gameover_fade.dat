@@ -6,6 +6,7 @@ animation{
     { x = 0, y = 0, frame_width = 640, frame_height = 480, origin_x = 320, origin_y = 245, num_frames = 6 },
   },
 }
+
 animation{
   name = "open",
   src_image = "hud/gameover_fade.png",
@@ -14,3 +15,4 @@ animation{
     { x = 0, y = 480, frame_width = 640, frame_height = 480, origin_x = 320, origin_y = 245, num_frames = 6 },
   },
 }
+

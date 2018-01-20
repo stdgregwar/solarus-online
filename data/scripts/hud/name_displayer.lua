@@ -1,7 +1,4 @@
 local network = require("scripts/networking/networking")
-
--- Script responsible of the drawing of the HUD of the game
-
 -- This early version only draws names of the players on top of their heads
 
 --global name displayer
@@ -55,13 +52,18 @@ function net_stats:on_draw(dst_surf)
   self.text:draw(dst_surf,10,10)
 end
 
-local function initialize_hud_features(game)
-  function game:on_draw(dst_surf)
-    name_displayer:on_draw(dst_surf)
-    net_stats:on_draw(dst_surf)
-  end
+function name_displayer:new(game,config)
+  return self
 end
 
+function name_displayer:set_dst_position()
+end
 
-local game_meta = sol.main.get_metatable("game")
-game_meta:register_event("on_started", initialize_hud_features)
+function name_displayer:get_surface()
+  return {
+    set_opacity = function(op)
+    end
+  }
+end
+
+return name_displayer

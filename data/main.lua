@@ -3,7 +3,7 @@
 -- See the Lua API! http://www.solarus-games.org/doc/latest
 
 require("scripts/multi_events")
-require("scripts/hud")
+require("scripts/hud/hud")
 local network = require("scripts/networking/networking")
 
 --small luafun test TODO remove
@@ -46,6 +46,12 @@ end
 
 function sol.main:start_game(game,server)
   sol.main.game = game
+  --desactivate pause
+  function game:on_command_pressed(cmd)
+    if cmd == 'pause' then
+      return true
+    end
+  end
   local co_screen = require("scripts/menus/connection_screen")
   sol.menu.start(self,co_screen)
   co_screen:connect(server.host,server.port,game)

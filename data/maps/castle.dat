@@ -7148,7 +7148,7 @@ destination{
   name = "from_dungeon",
   layer = 0,
   x = 384,
-  y = 109,
+  y = 117,
   direction = 3,
 }
 

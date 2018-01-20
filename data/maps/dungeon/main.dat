@@ -2307,6 +2307,7 @@ switch{
   y = 1048,
   subtype = "walkable",
   sprite = "entities/switch",
+  sound = "switch",
   needs_block = false,
   inactivate_when_leaving = true,
 }
@@ -2358,6 +2359,7 @@ switch{
   y = 1120,
   subtype = "walkable",
   sprite = "entities/switch",
+  sound = "switch",
   needs_block = false,
   inactivate_when_leaving = false,
 }
@@ -2426,6 +2428,7 @@ switch{
   y = 1072,
   subtype = "walkable",
   sprite = "entities/switch",
+  sound = "switch",
   needs_block = false,
   inactivate_when_leaving = true,
 }
