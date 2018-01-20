@@ -1,5 +1,7 @@
 const settings = {
-    description:'a demo solarus online server'
+    port:1337,
+    description:'solarus-online demo',
+    quest_name:'solarus-online'
 };
 
 exports.settings = settings;

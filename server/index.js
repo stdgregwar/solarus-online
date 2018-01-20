@@ -177,4 +177,5 @@ var server = net.createServer(function(socket) {
     });
 });
 
-server.listen(1337);
+log(`Started server for quest ${settings.quest_name}! listening on port : ${settings.port}`);
+server.listen(settings.port);
