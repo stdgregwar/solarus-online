@@ -2,6 +2,7 @@ local utils = {}
 
 local vector = require'scripts/Vector'
 local actions = require'scripts/metas/actions'
+local o_utils = require'scripts/libs/utils'
 
 local hpi = 3.1415 / 2
 
@@ -11,7 +12,7 @@ end
 
 --TODO take circle into account
 local function mov_type_map(type)
-  if type == "target" then
+  if type == "target" or type == 'jump'then
     return type;
   else
     return "straight"
@@ -92,11 +93,27 @@ function interpolate_movement(ent,old_pos,target_pos,new_mov)
   --return new_mov
 end
 
+local straight_properties = {
+  'angle',
+  'speed'
+}
+
+local jump_properties = {
+  'direction8',
+  'distance',
+  'speed'
+}
+
+local type_to_interp = {
+  target = true,
+  straight = true,
+}
+
 --unserialize entity movement
 function utils.movement_from_net(self,tb,network)
   local old_mov = self:get_movement()
   local mov = utils.mov_or_else(old_mov,tb.type)
-  if sol.main.get_type(mov) == 'target_movement' then
+  if tb.type == 'target' then
     if tb.entity then
       local map = self:get_map()
       local ent = network.get_entity(tb.entity);
@@ -104,6 +121,9 @@ function utils.movement_from_net(self,tb,network)
     else
       mov:set_target(tb.x,tb.y)
     end
+  elseif tb.type == 'jump' then
+    o_utils.apply_properties(mov,tb)
+    mov:set_ignore_obstacles(true)
   else --move is a straight move
     mov:set_angle(tb.angle or 0)
   end
@@ -111,10 +131,15 @@ function utils.movement_from_net(self,tb,network)
   if tb.max_dist then mov:set_max_distance(tb.max_dist) end
   local x,y = self:get_position()
   self.__pushed = tb.pushed
-  local true_mov = interpolate_movement(self,
-                                        {x=x,y=y},
-                                        tb.pos,
-                                        mov)
+
+
+  local true_mov = mov
+  if type_to_interp[mov_type_map(tb.type)] then
+    true_mov = interpolate_movement(self,
+                                    {x=x,y=y},
+                                    tb.pos,
+                                    mov)
+  end
   if true_mov ~= old_mov then true_mov:start(self) end
 end
 
@@ -130,9 +155,7 @@ local function serialize_movement(mob,mov)
             speed=mov:get_speed(),
             max_dist=max_dist}
   end
-  --function szs.path_finding_movement(mov)
-  --  return {speed=mov:get_speed(),angle=angle_from_dir(mov:get_direction4())}
-  --end
+
   szs.random_movement = szs.straight_movement
   function szs.target_movement(mov)
     local entname
@@ -146,6 +169,9 @@ local function serialize_movement(mob,mov)
             oy=mov.offset_y,
             speed=mov:get_speed(),
             entity=entname}
+  end
+  function szs.jump_movement(mov)
+    return o_utils.object_to_properties(mov,jump_properties)
   end
   szs.path_finding_movement = szs.straight_movement
   szs.random_path_movement = szs.straight_movement

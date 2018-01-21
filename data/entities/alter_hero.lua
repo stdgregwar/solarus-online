@@ -20,15 +20,29 @@ local game = entity:get_game()
 local map = entity:get_map()
 local tunic = entity:create_sprite("hero/tunic1","tunic")
 local sword = sol.sprite.create("hero/sword1")
+local stars = sol.sprite.create('hero/sword_stars1')
 -- Event called when the custom entity is initialized.
-function entity:on_created()
 
+local can_traverse = {
+  'traversable',
+  'shallow_water',
+  'grass',
+  'hole',
+  'ice',
+  'lava',
+  'ladder'
+}
+
+function entity:on_created()
   -- Initialize the properties of your custom entity here,
   -- like the sprite, the size, and whether it can traverse other
   -- entities and be traversed by them.r
   self:set_drawn_in_y_order(true)
   self:set_traversable_by(false)
   self:set_traversable_by('hero',true)
+  for _,g in ipairs(can_traverse) do
+    self:set_can_traverse(g,true)
+  end
 end
 
 entity.movement_from_net = mutils.movement_from_net
@@ -36,18 +50,11 @@ entity.movement_from_net = mutils.movement_from_net
 actions.setup_meta(entity)
 stateful.setup_meta(entity)
 
-local draw_sword_states = {
-  ['sword loading'] = true,
-  ['sword swinging'] = true,
-  ['sword tapping'] = true,
-}
-
 entity:watch_state_val(
   'state',
   function(state)
-    local draw_sword = state:find('sword') and true or false
-    entity:enable_sword_drawing(draw_sword)
     entity:update_animation()
+    stars:set_animation('loading')
   end
 )
 
@@ -57,12 +64,19 @@ entity:watch_state_val(
     if type(dir) == 'number' then
       sword:set_direction(dir)
       tunic:set_direction(dir)
+      stars:set_direction(dir)
     end
   end
 )
 
-function entity:enable_sword_drawing(b)
-  self.on_post_draw = b and self.draw_sword
+function entity:on_post_draw(srf)
+  local state = self.state and self.state.state or 'free'
+  if state:find('sword') then
+    self:draw_sword(srf)
+  end
+  if state == 'sword loading' then
+    self:draw_stars(srf)
+  end
 end
 
 function entity:declare_to_network()
@@ -79,13 +93,15 @@ function entity:draw_sword(surf)
   map:draw_visual(sword,x,y)
 end
 
+function entity:draw_stars(surf)
+  local x,y = self:get_position()
+  map:draw_visual(stars,x,y)
+end
+
 function entity:trigger_sword_anim(anim_name)
   local mov = self:get_movement()
   if mov then mov:stop() end
-  self:enable_sword_drawing(true)
-  sword:set_animation(anim_name,function()
-                        self:enable_sword_drawing(false)
-  end)
+  sword:set_animation(anim_name)
   tunic:set_animation(anim_name,function()
                         tunic:set_animation('stopped')
   end)
@@ -108,6 +124,7 @@ local state_to_walk_anim = {
   ['sword loading'] = 'sword_loading_walking',
   ['sword tapping'] = 'sword_tapping',
   ['pushing'] = 'pushing',
+  jumping = 'jumping',
   carrying = 'carrying_walking',
   hurt = 'hurt'
 }
@@ -117,7 +134,8 @@ local state_to_stopped_anim = {
   ['sword spin attack'] = 'none',
   ['sword loading'] = 'sword_loading_stopped',
   ['sword_tapping'] = 'sword_tapping',
-  ['pulling'] = 'pulling',
+  pulling = 'pulling',
+  jumping = 'jumping',
   carrying = 'carrying_stopped',
   hurt = 'hurt',
 }

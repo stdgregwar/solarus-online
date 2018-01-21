@@ -64,6 +64,31 @@ function table_diff(previous,new)
   return diff
 end
 
+
+function utils.object_to_properties(obj,props_names)
+  local props = {}
+  for _,pname in ipairs(props_names) do
+    local mname = 'get_' .. pname
+    local getter = obj[mname]
+    if getter then 
+      local prop = obj[mname](obj)
+      props[pname] = prop
+    end
+  end
+  return props
+end
+
+------------------------------------------------------------------------
+-- usually apply to solarus objects, restore properties trough setters
+------------------------------------------------------------------------
+function utils.apply_properties(obj,props)
+  for pname,pval in pairs(props) do
+    local sname = 'set_'.. pname
+    local setter = obj[sname]
+    safe(setter)(obj,pval)
+  end
+end
+
 function utils.dir_from_xy(x,y)
   local angle = math.atan(y,x)
   return math.floor((angle/math.pi)*4)%8
