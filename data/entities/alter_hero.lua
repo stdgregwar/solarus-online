@@ -139,26 +139,36 @@ end
 local throw_dist = 80
 
 function entity:action_throw()
-  local x,y = self:get_position()
+  local x,y,layer = self:get_position()
   if self.lifted then
     local lifted = self.lifted
-    local dir = vector(utils.xy_from_dir(self.state.dir))
-    local pos = vector(x,y)
-    local target = pos + dir * throw_dist
-    local mov = sol.movement.create('target')
-    lifted:set_xy(x,y-lift_height)
-    mov:set_target(target.x,target.y)
-    mov:set_speed(300)
+    local thrown = map:create_custom_entity{
+      direction=0,
+      x=x,
+      y=y-lift_height,
+      layer=layer,
+      width=16,
+      height=16,
+      sprite=lifted:get_animation_set()
+    }
+    self.lifted = nil
+
+    local mov = sol.movement.create('jump')
+    --mov:set_ignore_obstacles(true)
+    mov:set_distance(throw_dist)
+    mov:set_direction8(self.state.dir*2)
+    mov:set_speed(200)
+
     local function destroy()
-      lifted:set_animation(
+      mov:stop()
+      thrown:get_sprite():set_animation(
         'destroy',
         function()
-          mov:stop()
-          self.lifted = nil
+          thrown:remove()
       end)
     end
     mov.on_obstacle_reached = destroy
-    mov:start(lifted,destroy)
+    mov:start(thrown,destroy)
 
     self.attach_lifted = nil
   end

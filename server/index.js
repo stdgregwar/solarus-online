@@ -166,8 +166,12 @@ var server = net.createServer(function(socket) {
     });
     socket.on('close',function(data) {
         //remove_hero_from_map(socket,socket.map_id);
-        if(socket.map !== undefined) {socket.map.client_leaves(socket);}
-        log(2,`Player ${socket.name} (${socket.guid}) leaves`);
+        if(socket.map !== undefined) {
+            socket.map.client_leaves(socket);
+        }
+        if(socket.guid) {
+            log(2,`Player ${socket.name} (${socket.guid}) leaves`);
+        }
         delete clients_by_guid[socket.guid];
     });
     socket.on('error',function(err) {

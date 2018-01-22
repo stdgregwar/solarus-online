@@ -8,11 +8,11 @@ function utils.xy_from_dir(dir)
   if dir == 0 then
     return 1,0
   elseif dir == 1 then
-    return 0,1
+    return 0,-1
   elseif dir == 2 then
     return -1,0
   elseif dir == 3 then
-    return 0,-1
+    return 0,1
   end
 end
 
