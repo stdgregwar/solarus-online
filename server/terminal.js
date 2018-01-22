@@ -106,7 +106,6 @@ class Terminal {
             this.history.push(line);
         } else {
             this.error(`no such command ${cmd_name}`);
-
         }
         this.repl();
     }

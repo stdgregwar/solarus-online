@@ -15,6 +15,8 @@ local actions = require'scripts/metas/actions'
 local mutils = require'scripts/networking/mob_utils'
 local stateful = require'scripts/metas/stateful'
 local network = require'scripts/networking/networking'
+local vector = require'scripts/Vector'
+local utils = require'scripts/libs/utils'
 
 local game = entity:get_game()
 local map = entity:get_map()
@@ -41,7 +43,7 @@ function entity:on_created()
   self:set_traversable_by(false)
   self:set_traversable_by('hero',true)
   for _,g in ipairs(can_traverse) do
-    self:set_can_traverse(g,true)
+    self:set_can_traverse_ground(g,true)
   end
 end
 
@@ -52,9 +54,12 @@ stateful.setup_meta(entity)
 
 entity:watch_state_val(
   'state',
-  function(state)
+  function(state,old)
     entity:update_animation()
     stars:set_animation('loading')
+    if old == 'carrying' and state == 'free' then
+      entity:action_throw()
+    end
   end
 )
 
@@ -69,13 +74,22 @@ entity:watch_state_val(
   end
 )
 
-function entity:on_post_draw(srf)
+local lift_height = 16
+function entity:on_post_draw()
   local state = self.state and self.state.state or 'free'
   if state:find('sword') then
-    self:draw_sword(srf)
+    self:draw_sword()
   end
   if state == 'sword loading' then
-    self:draw_stars(srf)
+    self:draw_stars()
+  end
+  if self.lifted then
+    local x,y = 0,0
+    if self.attach_lifted then
+      local sx,sy = self:get_position()
+      x,y = sx,sy-lift_height
+    end
+    map:draw_visual(self.lifted,x,y)
   end
 end
 
@@ -88,12 +102,12 @@ function entity:declare_to_network()
   network.get_state(id,'hero',setup_state)
 end
 
-function entity:draw_sword(surf)
+function entity:draw_sword()
   local x,y = self:get_position()
   map:draw_visual(sword,x,y)
 end
 
-function entity:draw_stars(surf)
+function entity:draw_stars()
   local x,y = self:get_position()
   map:draw_visual(stars,x,y)
 end
@@ -113,6 +127,41 @@ end
 
 function entity:action_spin_attack()
   self:trigger_sword_anim("spin_attack")
+end
+
+
+function entity:action_lift(x,y,sprite_set)
+  local _,_,layer = self:get_position()
+  self.lifted = sol.sprite.create(sprite_set)
+  self.attach_lifted = true
+end
+
+local throw_dist = 80
+
+function entity:action_throw()
+  local x,y = self:get_position()
+  if self.lifted then
+    local lifted = self.lifted
+    local dir = vector(utils.xy_from_dir(self.state.dir))
+    local pos = vector(x,y)
+    local target = pos + dir * throw_dist
+    local mov = sol.movement.create('target')
+    lifted:set_xy(x,y-lift_height)
+    mov:set_target(target.x,target.y)
+    mov:set_speed(300)
+    local function destroy()
+      lifted:set_animation(
+        'destroy',
+        function()
+          mov:stop()
+          self.lifted = nil
+      end)
+    end
+    mov.on_obstacle_reached = destroy
+    mov:start(lifted,destroy)
+
+    self.attach_lifted = nil
+  end
 end
 
 function entity:set_displayed_name(name)
@@ -145,13 +194,21 @@ function entity:update_animation(mov)
   local state = self.state.state
   local walk_anim = state_to_walk_anim[state] or 'walking'
   local stop_anim = state_to_stopped_anim[state] or 'stopped'
-  local anim = (mov and mov:get_speed() > 0) and walk_anim or stop_anim
+  local walk = (mov and mov:get_speed() > 0)
+  local anim = walk and walk_anim or stop_anim
   if(tunic:get_animation() ~= anim) then
     if tunic:has_animation(anim) then
       tunic:set_animation(anim)
     end
     if sword:has_animation(anim) then
       sword:set_animation(anim)
+    end
+  end
+  if self.lifted and self.attach_lifted then
+    if walk then
+      self.lifted:set_animation('walking')
+    else
+      self.lifted:set_animation('stopped')
     end
   end
 end

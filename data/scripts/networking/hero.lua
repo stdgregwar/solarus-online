@@ -45,8 +45,14 @@ function hero_utils.setup_hero_repl_callback(game,hero,network)
       hero.state.dir = dir
     end
   end
-  function sprite:on_animation_changed(anim)
-    --hero.state.anim = anim
+
+  function hero:on_lifting(entity)
+    local sprite = entity:get_sprite()
+    local x,y = entity:get_position()
+    if sprite then
+      local anim_set = sprite:get_animation_set()
+      hero:action('lift',x,y,anim_set)
+    end
   end
 end
 

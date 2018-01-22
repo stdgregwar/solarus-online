@@ -13,6 +13,7 @@ local network = require'scripts/networking/networking'
 local entity = ...
 local game = entity:get_game()
 local map = entity:get_map()
+local hero = map:get_hero()
 local sprite = entity:get_sprite()
 
 -- add stateful trait
@@ -87,6 +88,7 @@ function entity:make_real()
   end
   function real:on_lifting()
     entity:disapear('lifted')
+    hero:on_lifting(real)
   end
   function real:on_exploded()
     entity:disapear('exploded')

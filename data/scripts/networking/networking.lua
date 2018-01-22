@@ -180,7 +180,7 @@ end
 function handlers:hero_action(msg)
   local hero = self.heroes[msg.id]
   if not hero then return end
-  hero:action(msg.action,unpack(params or {}))
+  hero:action(msg.action,unpack(msg.params or {}))
 end
 
 --a mob from the current map will be simulated by a remote worker
