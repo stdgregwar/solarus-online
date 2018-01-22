@@ -1,4 +1,3 @@
-var log = console.log;
 var State = require('./state.js').State;
 
 class Worker{
@@ -77,7 +76,7 @@ class Map{
         client.map_id = this.map_id;
         client.map = this;
         this.send_map_own(client,'map_state_init');
-        log(client.guid + ' added arrived in "' + this.map_id + '"');
+        log(1,`${client.name} (${client.guid}) arrived in "${this.map_id}"`);
     }
 
     send_map_own(client,type) {
@@ -113,7 +112,7 @@ class Map{
                 //Client is master and must be replaced
                 this.choose_new_master();
             }
-            log(client.guid + ' leaved "' + client.map_id + '"');
+            log(1,`${client.name} (${client.guid}) leaved "${this.map_id}"`);
             //TODO redistribute workers of this client
             //TODO figure out how to do from has not mob
         }
@@ -144,7 +143,7 @@ class Map{
     //Client declare he don't need mob anymore
     has_not_mob(client,mob_id) {
         if(this.workers[mob_id] == client) { //Client was mob master
-            log('client ' + client.guid + "can't simulate " + mob_id + ' anymore...');
+            log(0,'client ' + client.guid + "can't simulate " + mob_id + ' anymore...');
             delete this.workers[mob_id];
             var wbc = this.workers_by_clients[client.guid];
             const i = wbc.indexOf(mob_id);
@@ -160,7 +159,7 @@ class Map{
             }
             //If no other client was found mob is master-less until someone
             //claims it again
-            log('mob ' + mob_id + 'is no longer simulated');
+            log(0,'mob ' + mob_id + 'is no longer simulated');
         } else {
             //Don't do anything TODO : discrimintate mob send on map based on
             //client mob havingness

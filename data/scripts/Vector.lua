@@ -1,9 +1,3 @@
-local ffi = require'ffi'
-
-ffi.cdef[[
-typedef struct {float x,y;} Vector;
-]]
-
 Vector = {}
 Vector.__index = Vector
 
@@ -127,13 +121,8 @@ function Vector:cross(other)
   return self.x * other.y - self.y * other.x
 end
 
-local v_type = ffi.metatype('Vector',Vector)
-
 function Vector.new(x, y)
-  local vec = v_type()
-  vec.x = x or 0
-  vec.y = y or 0
-  return vec
+  return setmetatable({x=x,y=y},Vector)
 end
 
 setmetatable(Vector, { __call = function(_, ...) return Vector.new(...) end })

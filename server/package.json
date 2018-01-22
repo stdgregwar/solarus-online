@@ -5,7 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "guid": "0.0.12",
-    "node-uuid": "^1.4.8"
+    "node-uuid": "^1.4.8",
+    "terminal-kit": "^1.14.3"
   },
   "devDependencies": {},
   "scripts": {

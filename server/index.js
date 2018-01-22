@@ -1,14 +1,13 @@
 var net = require('net');
 var Guid = require('guid');
-var log = console.log;
+global.log = console.log;
 
 const settings = require('./server_settings.js').settings;
 var mm = require('./map.js');
 var insts = require('./instance.js');
 var State = require('./state.js').State;
-var maps_by_id = {};
+var Terminal = require('./terminal.js').Terminal;
 
-var maps = new mm.Maps();
 var instances = new insts.Instances();
 
 instances.create_instance('main'); //add main instance
@@ -38,16 +37,15 @@ function hero_state(socket,msg) {
 const handlers = {
     hello : (socket,msg)=>{
         const guid = Guid.raw();
-        log("Guid for player " + msg.name + " : " + guid);
         socket.guid = guid;
         socket.name = msg.name;
         socket.send({type:'guid', guid:guid,time:Date.now()});
         //By default client is in main instance
         instances.client_arrives(socket,'main');
         clients_by_guid[guid] = socket;
+        log(2,`Player connected : ${socket.name} (${socket.guid})`);
     },
     hero_arrival : function(socket,msg) {
-        log('Hero has changed map to ' + msg.map_id);
         socket.x = msg.x;
         socket.y = msg.y;
         socket.layer = msg.layer;
@@ -139,7 +137,7 @@ const log_blacklist = {
 var server = net.createServer(function(socket) {
     socket.send = function(obj) {
         const str = JSON.stringify(obj);
-        if(!(obj.type in log_blacklist)) log('Sending ' + str);
+        //if(!(obj.type in log_blacklist)) log('Sending ' + str);
         socket.write(str + '\n');
     };
     socket.state = new State();
@@ -153,7 +151,7 @@ var server = net.createServer(function(socket) {
                 var dt = datas[i];
                 try{
                     const msg = JSON.parse(dt);
-                    if(!(msg.type in log_blacklist))console.log('Received ' + dt);
+                    //if(!(msg.type in log_blacklist))console.log('Received ' + dt);
                     message_handler(socket,msg);
                 } catch(e) {
                     log("Error " + e);
@@ -169,13 +167,30 @@ var server = net.createServer(function(socket) {
     socket.on('close',function(data) {
         //remove_hero_from_map(socket,socket.map_id);
         if(socket.map !== undefined) {socket.map.client_leaves(socket);}
+        log(2,`Player ${socket.name} (${socket.guid}) leaves`);
         delete clients_by_guid[socket.guid];
     });
     socket.on('error',function(err) {
         console.error(err);
-        log("Continuing after error");
+        log(2,"Continuing after error");
     });
 });
 
+server.stop = function() {
+    for(const guid in clients_by_guid) {
+        var client = clients_by_guid[guid];
+        client.send({type:'server_shutdown'});
+        client.destroy();
+    }
+    server.close(()=>{
+        terminal.stop();
+    });
+};
+
 log(`Started server for quest ${settings.quest_name}! listening on port : ${settings.port}`);
 server.listen(settings.port);
+var terminal = new Terminal(clients_by_guid,handlers,instances,server);
+global.log = (a,b,c)=>{
+    terminal.log(a,b,c);
+};
+terminal.start_terminal();

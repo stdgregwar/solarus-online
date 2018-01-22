@@ -1,4 +1,3 @@
-
 class State {
     constructor(base) {
         this.state = base || {};
