@@ -40,12 +40,17 @@ function log_level_cmd(terminal,tokens) {
     terminal.log_level = lvl;
 }
 
+function save_cmd(terminal,tokens) {
+    terminal.server.save();
+}
+
 var commands = {
     help:cmd('display this help message','help',help_cmd),
     list:cmd('list all players','list',list_cmd),
     stats:cmd('display server stats','stats [category]',stats_cmd),
     stop:cmd('stop the server', 'stop',stop_cmd),
-    set_log_level:cmd('set the importance that a msg need to get printed','set_log_level level(int)',log_level_cmd)
+    set_log_level:cmd('set the importance that a msg need to get printed','set_log_level level(int)',log_level_cmd),
+    save:cmd('save the actual states of the world','save',save_cmd)
 };
 
 var cmd_array = [];

@@ -336,6 +336,7 @@ end
 function network.on_game_started(game)
   local hero = game:get_hero()
   game:set_value('guid',network.guid);
+  game:save()
   --on map change notify server our new position and map
   hero_utils.setup_hero_repl_callback(game,hero,network)
   hero:declare_to_network('hero')
@@ -570,7 +571,7 @@ function network.connect(host,port,save,finished_callback,op_progress_callback)
   local name = save:get_value('player_name')
   local guid = save:get_value('guid')
   -- TODO use guid to retrieve server side save
-  send({type="hello",name=name})
+  send({type="hello",name=name,guid=sol.main.game:get_value('guid')})
   
   -- Add server close callback to the engine
   function sol.main:on_finished()

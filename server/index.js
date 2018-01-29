@@ -7,7 +7,7 @@ var mm = require('./map.js');
 var insts = require('./instance.js');
 var State = require('./state.js').State;
 var Terminal = require('./terminal.js').Terminal;
-
+var db = require('./db.js').db;
 var instances = new insts.Instances();
 
 instances.create_instance('main'); //add main instance
@@ -34,16 +34,39 @@ function hero_state(socket,msg) {
                                 );
 }
 
+function send_hello(socket,guid,name) {
+    socket.guid = guid;
+    socket.name = name;
+    socket.send({type:'guid', guid:guid,time:Date.now()});
+    //By default client is in main instance
+    instances.client_arrives(socket,'main');
+    clients_by_guid[guid] = socket;
+    log(2,`Player connected : ${socket.name} (${socket.guid})`);
+}
+
 const handlers = {
     hello : (socket,msg)=>{
-        const guid = Guid.raw();
-        socket.guid = guid;
-        socket.name = msg.name;
-        socket.send({type:'guid', guid:guid,time:Date.now()});
-        //By default client is in main instance
-        instances.client_arrives(socket,'main');
-        clients_by_guid[guid] = socket;
-        log(2,`Player connected : ${socket.name} (${socket.guid})`);
+        if(msg.guid) { //Player try to resume a game
+            //try to find guid in db
+            db.has_user(msg.guid).then((has)=>{
+                if(has) {
+                    db.get_user_state(msg.guid).then((state)=>{
+                        socket.state = new State(state);
+                        //TODO resend actual DB name
+                        send_hello(socket,msg.guid,msg.name);
+                    });
+                } else {
+                    //Send error
+                    socket.send({type:'error',error:`no such user guid : ${msg.guid}`});
+                }
+            });
+        } else { //Player first connection
+            const guid = Guid.raw();
+            //Suppose guid is indeed unique
+            db.create_user(guid,msg.name,{}).then(()=>{
+                send_hello(socket,guid,msg.name);
+            });
+        }
     },
     hero_arrival : function(socket,msg) {
         socket.x = msg.x;
@@ -105,6 +128,7 @@ const handlers = {
         socket.send({type:'get_mob_state_qa',qn:msg.qn,state:state});
     },
     get_hero_state : (socket,msg) => {
+        //TODO take msg.guid into account
         const state = socket.state.get_raw();
         socket.send({type:'get_hero_state_qa',qn:msg.qn,state:state});
     },
@@ -140,6 +164,9 @@ var server = net.createServer(function(socket) {
         //if(!(obj.type in log_blacklist)) log('Sending ' + str);
         socket.write(str + '\n');
     };
+    socket.save = function() {
+        return db.save_user_state(socket.guid,socket.state.get_raw());
+    };
     socket.state = new State();
     var buf = '';
     const terminator = '\n';
@@ -172,6 +199,7 @@ var server = net.createServer(function(socket) {
         if(socket.guid) {
             log(2,`Player ${socket.name} (${socket.guid}) leaves`);
         }
+        socket.save();
         delete clients_by_guid[socket.guid];
     });
     socket.on('error',function(err) {
@@ -180,21 +208,41 @@ var server = net.createServer(function(socket) {
     });
 });
 
-server.stop = function() {
-    for(const guid in clients_by_guid) {
-        var client = clients_by_guid[guid];
-        client.send({type:'server_shutdown'});
-        client.destroy();
-    }
-    server.close(()=>{
-        terminal.stop();
+server.save = function() {
+    log(3,'saving main instance');
+    return instances.instance('main').save().then(()=>{
+        log(3,'instance saved!');
+        log(3,'Saving users...');
+        const promises = Object.keys(clients_by_guid).map((k)=>{
+            const client = clients_by_guid[k];
+            return client.save();
+        });
+        return Promise.all(promises);
     });
 };
 
-log(`Started server for quest ${settings.quest_name}! listening on port : ${settings.port}`);
-server.listen(settings.port);
-var terminal = new Terminal(clients_by_guid,handlers,instances,server);
-global.log = (a,b,c)=>{
-    terminal.log(a,b,c);
+server.stop = function() {
+    server.save().then(()=>{
+        log(3,'Closing connections...');
+        for(const guid in clients_by_guid) {
+            var client = clients_by_guid[guid];
+            client.send({type:'server_shutdown'});
+            client.destroy();
+        }
+            server.close(()=>{
+                log(3,'connections closed, exiting...');
+                terminal.stop();
+            });
+        });
 };
-terminal.start_terminal();
+var terminal = new Terminal(clients_by_guid,handlers,instances,server);
+log(`Opening world database`);
+db.init().then(()=>{
+    log(`Started server for quest ${settings.quest_name}! listening on port : ${settings.port}`);
+    server.listen(settings.port);
+    global.log = (a,b,c)=>{
+        terminal.log(a,b,c);
+    };
+    terminal.start_terminal();
+});
+

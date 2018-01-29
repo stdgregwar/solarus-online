@@ -25,6 +25,10 @@ class Instances{
         }
         this.instances[inst_id].client_arrives(client);
     }
+
+    instance(id) {
+        return this.instances[id];
+    }
 }
 
 class Instance{
@@ -39,6 +43,11 @@ class Instance{
 
     client_leaves(client) {
         client.instance = undefined;
+    }
+
+    save() {
+        //TODO save instance state as well
+        return this.maps.save();
     }
 }
 

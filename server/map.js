@@ -1,4 +1,5 @@
 var State = require('./state.js').State;
+var db = require('./db.js').db;
 
 class Worker{
     constructor(id,client) {
@@ -13,17 +14,34 @@ class Maps{
         this.maps_by_id = {};
     }
 
-    //TODO garbage collect maps that are empty to much time
+    get_map_promise(map_id) {
+        if(!(map_id in this.maps_by_id)) {
+            return db.get_map_state(map_id).then((state)=>{
+                var map = new Map(map_id,state);
+                this.maps_by_id[map_id] = map;
+                return map;
+            });
+        } else {
+            return Promise.resolve(this.maps_by_id[map_id]);
+        }
+    }
 
+    //TODO garbage collect maps that are empty to much time
     client_arrives(client, map_id) {
         if(client.map !== undefined) {
             client.map.client_leaves(client);
         }
-        if(!(map_id in this.maps_by_id)) {
-            this.maps_by_id[map_id] = new Map(map_id);
-        }
-        var new_map = this.maps_by_id[map_id];
-        new_map.client_arrives(client);
+        this.get_map_promise(map_id).then((map)=>{
+            map.client_arrives(client);
+        });
+    }
+
+    save() {
+        const promises = Object.keys(this.maps_by_id).map((k)=>{
+            const map = this.maps_by_id[k];
+            return map.save();
+        });
+        return Promise.all(promises);
     }
 }
 
@@ -36,13 +54,13 @@ class Maps{
    in sync
    **/
 class Map{
-    constructor(map_id) {
+    constructor(map_id,state) {
         this.map_id = map_id;
         this.heroes = [];
         this.workers = {};
         this.workers_by_clients = {};
         this.mob_states = {};
-        this.state = new State();
+        this.state = new State(state);
     }
 
     make_arrival(arriving) {
@@ -197,6 +215,10 @@ class Map{
                 hero.send(msg);
             }
         }
+    }
+
+    save() {
+        return db.save_map_state(this.map_id,this.state.get_raw());
     }
 }
 

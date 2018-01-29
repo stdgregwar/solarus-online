@@ -30,7 +30,7 @@ function utils.mov_or_else(mov,type)
   end
 end
 
-local interp_time = 100 -- milliseconds
+local interp_time = 16*4 -- milliseconds
 local tp_tolerance = 2 -- 2px teleport isn't that bad
 local tp_threshold = 1200 -- 400px is certainly too big to keep up
 
