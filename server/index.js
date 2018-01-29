@@ -8,6 +8,7 @@ var insts = require('./instance.js');
 var State = require('./state.js').State;
 var Terminal = require('./terminal.js').Terminal;
 var db = require('./db.js').db;
+
 var instances = new insts.Instances();
 
 instances.create_instance('main'); //add main instance
@@ -245,4 +246,3 @@ db.init().then(()=>{
     };
     terminal.start_terminal();
 });
-
