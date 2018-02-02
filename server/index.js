@@ -143,9 +143,29 @@ const handlers = {
         socket.map.map_state(socket,msg);
     },
     map_action : broadcast_on_map,
+    chat_message : function(socket,msg) {
+        socket.send(msg);
+        switch(msg.msg.channel) {
+        case 'global':
+            return server.broadcast(msg,socket);
+        case 'instance':
+            return socket.instance.broadcast(msg,socket);
+        case 'map':
+        case 'business':
+            log('On maaaaaap');
+            return broadcast_on_map(socket,msg);
+        case 'group':
+            //TODO
+        case 'guild':
+        case 'system':
+        default:
+            break;
+        }
+    },
     get_header: function(socket,msg) {
         socket.send({type:'server_header',header:{description:settings.description}});
     }
+
 };
 
 function message_handler(socket,msg) {
@@ -208,6 +228,13 @@ var server = net.createServer(function(socket) {
         log(2,"Continuing after error");
     });
 });
+
+server.broadcast = function(msg,except){
+    for(var guid in clients_by_guid) {
+        let client = clients_by_guid[guid];
+        if(client!=except)client.send(msg);
+    }
+};
 
 server.save = function() {
     log(3,'saving main instance');

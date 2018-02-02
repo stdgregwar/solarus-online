@@ -9,7 +9,7 @@ local network = require("scripts/networking/networking")
 --small luafun test TODO remove
 require("scripts/libs/iter")
 
-
+ 
 --Enemy metatable setup
 require("scripts/metas/enemy")
 --Map metatable setup
@@ -130,6 +130,10 @@ end
 
 function sol.main.is_debug_enabled()
   return true
+end
+
+function sol.language.get_ui_font(language)
+  return 'minecraftia',8
 end
 
 -- If debug is enabled, the shift key skips dialogs

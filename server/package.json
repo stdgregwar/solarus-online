@@ -14,7 +14,7 @@
     },
     "devDependencies": {},
     "scripts": {
-        "test": "node index.js"
+        "test": "mocha"
     },
     "repository": {
         "type": "git",
@@ -30,9 +30,6 @@
     "license": "GPL-3.0",
     "bugs": {
         "url": "https://github.com/stdgregwar/solarus-online/issues"
-    },
-    "scripts": {
-        "test": "mocha"
     },
     "homepage": "https://github.com/stdgregwar/solarus-online#readme"
 }

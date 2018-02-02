@@ -55,13 +55,13 @@ return function(enemy)
 
   ---------------------------------------------------
   ---------- Common parts ---------------------------
-  function enemy:on_movement_changed(movement)
+  enemy:register_event('on_movement_changed',function (movement)
     if not self:pushed() then
       local direction4 = movement:get_direction4()
       main_sprite:set_direction(direction4)
       sword_sprite:set_direction(direction4)
     end
-  end
+  end)
   
   function enemy:on_mob_created()
     self.max_life = properties.life

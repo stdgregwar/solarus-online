@@ -97,6 +97,13 @@ local hud_config = {
     menu_script = "scripts/hud/net_stats",
     x = 5,
     y = 10
+  },
+  --chat box
+  {
+    menu_script = "scripts/hud/chat_box",
+    x=5,
+    y=135,
+    width = 200
   }
 }
 

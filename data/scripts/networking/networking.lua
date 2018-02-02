@@ -27,7 +27,11 @@ local mob_utils = require'scripts/networking/mob_utils'
 -- hero network utils
 local hero_utils = require'scripts/networking/hero'
 
+-- low-level network utils
 local net_utils = require'scripts/networking/net_utils'
+
+-- ring-buffer for chat messages
+local circular_buffer = require'scripts/libs/circular_buffer.lua'
 
 --make send and receive raising error by default
 local function offline_send(data)
@@ -38,11 +42,13 @@ local function offline_receive(pat)
    return {type="error", err = "Not connected"}
 end
 
+local chat_messages_history_size = 100
 
 local network = {
   guid = 0,
   send = offline_send,
-  receive = offline_receive
+  receive = offline_receive,
+  chat_messages = circular_buffer.new(chat_messages_history_size)
 }
 
 --utility function to make work around some solarus events
@@ -271,6 +277,11 @@ function handlers:map_action(msg)
   network.current_map:action(msg.action,unpack(msg.params or {}))
 end
 
+function handlers:chat_message(msg)
+  network.chat_messages:push(msg.msg)
+  network.on_new_chat_message(msg.msg)
+end
+
 function delayed_call(delay,f,...)
   local args = {...}
   sol.timer.start(delay,function() f(unpack(args)) end)
@@ -444,13 +455,31 @@ function network.get_server_header(host,port,save,continuation)
   server:send({type='get_header',guid=guid})
 end
 
+----------------------------------------------------------
+-- CHAT MESSAGES
+----------------------------------------------------------
+
+function network.send_chat_message(msg)
+  msg.author = network.player_name
+  network.send({type='chat_message',msg=msg})
+end
+
+-- returns an iterator to the chat message received, newest to oldest
+function network.get_chat_messages_history()
+  return array(network.chat_messages)
+end
+
+----------------------------------------------------------
+-- LOW LEVEL send - receive primitives
+----------------------------------------------------------
+
 -- blacklist some packet to avoid polluting the logs
 local log_blacklist = {
   hero_move = true,
   has_mob = true,
   has_not_mob = true,
-  --master_mob = true,
-  --remote_mob = true,
+  master_mob = true,
+  remote_mob = true,
   hero_state = true,
   mob_state = true,
   get_mob_state = true,
@@ -533,8 +562,9 @@ function network.make_server(socket,handlers)
   return server,send
 end
 
------------------------------------------------
-------------- Connect to server ---------------
+---------------------------------------------------
+------------- Connect to server -------------------
+-- This is a bit like the 'main' for the network --
 function network.connect(host,port,save,finished_callback,op_progress_callback)
   network.host = host
   network.port = port
@@ -570,10 +600,14 @@ function network.connect(host,port,save,finished_callback,op_progress_callback)
   print("Sending handshake to server")
   local name = save:get_value('player_name')
   local guid = save:get_value('guid')
+
+  network.player_name = name
   -- TODO use guid to retrieve server side save
+  -- TODO test if now-retrieved save is correct
   send({type="hello",name=name,guid=sol.main.game:get_value('guid')})
   
   -- Add server close callback to the engine
+  --TODO change main finish to game finish...
   function sol.main:on_finished()
     print("Disconnecting server")
     handled_server:close()

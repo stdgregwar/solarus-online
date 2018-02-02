@@ -94,8 +94,25 @@ function utils.dir_from_xy(x,y)
   return math.floor((angle/math.pi)*4)%8
 end
 
-function safe(f)  
+function safe(f)
   return f or function() end
+end
+
+local function reversedipairsiter(t, i)
+    i = i - 1
+    if i ~= 0 then
+        return i, t[i]
+    end
+end
+
+function reversedipairs(t)
+    return reversedipairsiter, t, #t + 1
+end
+
+function reverse_it(it)
+  local t = {}
+  iter(it):foreach(function(v) table.insert(t,v) end)
+  return iter(reversedipairs(t)):map(function(i,...) return ... end)
 end
 
 return utils

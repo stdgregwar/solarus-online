@@ -23,6 +23,8 @@ tileset{ id = "temple_blue", description = "Temple (blue)" }
 tileset{ id = "temple_green", description = "Temple (green)" }
 tileset{ id = "temple_yellow", description = "Temple (yellow)" }
 
+sprite{ id = "console/cursor", description = "console/cursor" }
+sprite{ id = "console/icons", description = "console/icons" }
 sprite{ id = "enemies/blue_knight_soldier", description = "enemies/blue_knight_soldier" }
 sprite{ id = "enemies/blue_knight_soldier_sword", description = "enemies/blue_knight_soldier_sword" }
 sprite{ id = "enemies/chicken", description = "enemies/chicken" }
@@ -268,5 +270,6 @@ font{ id = "la", description = "la" }
 font{ id = "minecraftia", description = "minecraftia" }
 font{ id = "small_green_digits", description = "small_green_digits" }
 font{ id = "small_white_digits", description = "small_white_digits" }
+font{ id = "smallest_pixel-7", description = "smallest_pixel-7" }
 font{ id = "white_digits", description = "white_digits" }
 

@@ -270,6 +270,7 @@ function server_menu:read_servers()
     }
     slot.server_description = sol.text_surface.create{
       font = font,
+      rendering_mode = 'antialiasing',
       font_size = font_size-1,
       color = {128,128,128}
     }

@@ -49,6 +49,13 @@ class Instance{
         //TODO save instance state as well
         return this.maps.save();
     }
+
+    broadcast(msg,except) {
+        for(const map_id in this.maps.maps_by_id) {
+            let map = this.maps.maps_by_id[map_id];
+            map.broadcast(msg,except);
+        }
+    }
 }
 
 exports.Instances = Instances;

@@ -44,13 +44,30 @@ function save_cmd(terminal,tokens) {
     terminal.server.save();
 }
 
+function say_cmd(terminal,tokens) {
+    let server = terminal.server;
+    let channel = tokens[1] || 'system';
+    let author = tokens[2] || 'server';
+    let text = tokens[0];
+    let msg = {
+        type:'chat_message',
+        msg:{
+            author:author,
+            channel:channel,
+            text:text
+        }
+    };
+    server.broadcast(msg);
+}
+
 var commands = {
     help:cmd('display this help message','help',help_cmd),
     list:cmd('list all players','list',list_cmd),
     stats:cmd('display server stats','stats [category]',stats_cmd),
     stop:cmd('stop the server', 'stop',stop_cmd),
     set_log_level:cmd('set the importance that a msg need to get printed','set_log_level level(int)',log_level_cmd),
-    save:cmd('save the actual states of the world','save',save_cmd)
+    save:cmd('save the actual states of the world','save',save_cmd),
+    say:cmd('say something to players','say text [channel:default=system]',say_cmd)
 };
 
 var cmd_array = [];
@@ -96,8 +113,18 @@ class Terminal {
         });
     }
 
+
+    add_history_line(line) {
+        if(line !== this.history[this.history.length-1]) {
+            this.history.push(line);
+        }
+    }
+
     exec(line) {
-        var tokens = line.split(' ');
+        var regexp = /"([^"]*)"|(\S+)/g;
+        //TODO tokenize without quotes
+        var tokens = line.match(regexp);
+
         if(tokens.length < 1) {
             this.error('no cmd');
             return;
@@ -108,7 +135,7 @@ class Terminal {
             const cmd = commands[cmd_name];
             term('\n');
             cmd.exec(this,tokens);
-            this.history.push(line);
+            this.add_history_line(line);
         } else {
             this.error(`no such command ${cmd_name}`);
         }
