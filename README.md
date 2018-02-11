@@ -9,7 +9,7 @@ This repository contains a demo and all source of an online layer to make the [s
 - server
 - fully working 'async' networking
 - asymetric mob simulation (see below)
-- symetric map,object simulation
+- symetric map, object simulation
 - movement replication primitives
 - api adaptation for multiplayer aware ennemies
 - network synchronised states and actions
@@ -17,8 +17,8 @@ This repository contains a demo and all source of an online layer to make the [s
 In practice the following engine entities are synchronisable :
 - hero
   - simple sword
-  - no jump,lift
-- ennemies
+  - no jump, lift
+- enemies
   - respawn mechanics
 - npcs
 - destructibles
